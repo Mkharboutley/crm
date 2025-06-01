@@ -1,0 +1,45 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+  padding: 20px;
+  background: url('/background.gif') no-repeat center center;
+  background-size: cover;
+}
+
+.wrapper {
+  width: 100%;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.4rem;
+  padding: 2rem;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.logo {
+  width: 300px;
+  margin-bottom: 2rem;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.error {
+  width: 100%;
+  text-align: center;
+  color: #ff5f5f;
+  font-size: 0.9rem;
+  background: rgba(255, 95, 95, 0.1);
+  padding: 12px;
+  border-radius: 12px;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 95, 95, 0.2);
+}

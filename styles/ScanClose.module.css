@@ -1,0 +1,81 @@
+/* styles/ScanClose.module.css */
+
+.root {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+.content {
+  position: relative;
+  z-index: 20;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1.5rem;
+  text-align: center;
+  color: white;
+}
+
+.scanPrompt {
+  background-color: rgba(0, 0, 0, 0.65);
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 0.75rem;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+  border: 1px solid white;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.scanBox {
+  position: absolute;
+  top: 25%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 250px;
+  height: 160px;
+  border: 2px solid #facc15; /* Tailwind yellow-400 */
+  border-radius: 12px;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.status {
+  font-size: 1.125rem;
+  font-weight: 600;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  margin-top: 1.5rem;
+}
+
+.success {
+  background-color: #16a34a; /* green-600 */
+  color: white;
+}
+
+.error {
+  background-color: #dc2626; /* red-600 */
+  color: white;
+}

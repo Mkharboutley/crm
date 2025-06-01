@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>QR-iValet - Firebase + OneSignal</title>
+
+    <!-- Firebase SDK -->
+    <script defer src="/__/firebase/11.7.1/firebase-app-compat.js"></script>
+    <script defer src="/__/firebase/11.7.1/firebase-auth-compat.js"></script>
+    <script defer src="/__/firebase/11.7.1/firebase-firestore-compat.js"></script>
+    <script defer src="/__/firebase/11.7.1/firebase-functions-compat.js"></script>
+    <script defer src="/__/firebase/11.7.1/firebase-messaging-compat.js"></script>
+    <script defer src="/__/firebase/11.7.1/firebase-analytics-compat.js"></script>
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+
+    <!-- OneSignal v16 SDK -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        await OneSignal.init({
+          appId: "ab826fd3-c04d-4080-82c2-f68285584a53",
+          serviceWorkerPath: "OneSignalSDKWorker.js",
+        });
+      });
+    </script>
+
+    <style>
+      body {
+        background: #f1f1f1;
+        font-family: Roboto, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      #message {
+        background: white;
+        max-width: 400px;
+        margin: 100px auto;
+        padding: 32px;
+        border-radius: 8px;
+        box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+        text-align: center;
+      }
+      h1 {
+        color: #333;
+        font-size: 24px;
+      }
+      p {
+        color: #666;
+        font-size: 14px;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="message">
+      <h1>🚀 QR-iValet is Live</h1>
+      <p>Firebase & OneSignal integration complete.<br />Push notifications are ready.</p>
+    </div>
+  </body>
+</html>

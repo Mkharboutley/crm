@@ -1,0 +1,308 @@
+.dashboardWrapper {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(10px);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.headerTitle {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.header h1 {
+  font-size: 2rem;
+  color: #fff;
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  background: linear-gradient(45deg, #fff, #a5a5a5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  gap: 1rem;
+}
+
+.settingsToggle {
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  backdrop-filter: blur(5px);
+}
+
+.settingsToggle:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.filterBar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+}
+
+.filterBar label {
+  color: #fff;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.filterBar select,
+.filterBar input {
+  width: 100%;
+  padding: 0.7rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  backdrop-filter: blur(5px);
+}
+
+.filterBar select:focus,
+.filterBar input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.tableWrapper {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: white;
+}
+
+.table th {
+  text-align: left;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  font-weight: 500;
+}
+
+.table th:first-child {
+  border-top-left-radius: 8px;
+}
+
+.table th:last-child {
+  border-top-right-radius: 8px;
+}
+
+.table td {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.table tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.badge {
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+.requested {
+  background: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
+}
+
+.assigned {
+  background: rgba(33, 150, 243, 0.2);
+  color: #2196f3;
+}
+
+.completed {
+  background: rgba(76, 175, 80, 0.2);
+  color: #4caf50;
+}
+
+.actionBtn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  margin-right: 0.5rem;
+}
+
+.actionBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.actionBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cancelBtn {
+  background: rgba(244, 67, 54, 0.2);
+  color: #f44336;
+}
+
+.cancelBtn:hover {
+  background: rgba(244, 67, 54, 0.3);
+}
+
+/* Settings Panel Styles */
+.settingsPanel {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  color: white;
+}
+
+.settingsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.settingsGrid {
+  display: grid;
+  gap: 2rem;
+}
+
+.settingGroup {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+.settingRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1rem 0;
+}
+
+.settingRow input,
+.settingRow select {
+  width: 200px;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.saveBtn {
+  background: rgba(76, 175, 80, 0.2);
+  color: #4caf50;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 1rem;
+}
+
+.saveBtn:hover {
+  background: rgba(76, 175, 80, 0.3);
+}
+
+/* Stats Section */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.statCard {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1.5rem;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.statNumber {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(45deg, #2196f3, #4caf50);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.statLabel {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+}
+
+/* Voice Message Section */
+.voiceSection {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+}
+
+.voiceHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.voiceList {
+  display: grid;
+  gap: 1rem;
+}
+
+.voiceMessage {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 1rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.voiceControls {
+  display: flex;
+  gap: 0.5rem;
+}
