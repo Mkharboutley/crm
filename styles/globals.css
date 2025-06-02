@@ -12,10 +12,9 @@ html, body {
   height: 100vh;
   font-family: 'Almarai', sans-serif;
   overflow: hidden;
-  background: linear-gradient(135deg, #1a2e3b, #0d4d31);
+  background: #132540;
 }
 
-/* Animated QR Background */
 .particles {
   position: fixed;
   top: 0;
@@ -25,35 +24,28 @@ html, body {
   z-index: 0;
   pointer-events: none;
   opacity: 0.8;
-  background: radial-gradient(circle at center, rgba(76, 175, 80, 0.1), rgba(13, 77, 49, 0.3));
-  overflow: hidden;
+  background:
+    radial-gradient(circle at 20% 35%, rgba(80, 180, 255, 0.4) 2px, transparent 2.5px),
+    radial-gradient(circle at 85% 44%, rgba(160, 100, 255, 0.4) 2px, transparent 2.5px),
+    radial-gradient(circle at 46% 52%, rgba(255, 130, 255, 0.4) 2px, transparent 2.5px);
+  background-size: 180px 180px;
+  animation: particlesDrift 4s linear infinite;
+  filter: blur(0.5px);
 }
 
-.particles::before,
-.particles::after {
-  content: '';
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background-image: 
-    linear-gradient(0deg, transparent 24%, rgba(144, 238, 144, .05) 25%, rgba(144, 238, 144, .05) 26%, transparent 27%, transparent 74%, rgba(144, 238, 144, .05) 75%, rgba(144, 238, 144, .05) 76%, transparent 77%, transparent),
-    linear-gradient(90deg, transparent 24%, rgba(144, 238, 144, .05) 25%, rgba(144, 238, 144, .05) 26%, transparent 27%, transparent 74%, rgba(144, 238, 144, .05) 75%, rgba(144, 238, 144, .05) 76%, transparent 77%, transparent);
-  background-size: 50px 50px;
-  animation: qrFloat 3s linear infinite;
-}
-
-.particles::after {
-  background-size: 30px 30px;
-  animation-duration: 2s;
-  opacity: 0.5;
-}
-
-@keyframes qrFloat {
+@keyframes particlesDrift {
   0% {
-    transform: translate(0, 0) rotate(0deg);
+    background-position: 0 0;
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.05);
   }
   100% {
-    transform: translate(-50px, -50px) rotate(1deg);
+    background-position: 180px 180px;
+    opacity: 0.8;
+    transform: scale(1);
   }
 }
 
@@ -75,39 +67,11 @@ html, body {
   height: 100vh;
   background: radial-gradient(
     circle at center,
-    rgba(144, 238, 144, 0.1) 15%,
-    rgba(0, 0, 0, 0.6) 100%
+    transparent 0%,
+    rgba(0, 0, 0, 0.5) 100%
   );
   z-index: 0.5;
   pointer-events: none;
-  animation: pulseOverlay 4s ease-in-out infinite;
-}
-
-@keyframes pulseOverlay {
-  0% {
-    opacity: 0.8;
-    background: radial-gradient(
-      circle at center,
-      rgba(144, 238, 144, 0.1) 15%,
-      rgba(0, 0, 0, 0.6) 100%
-    );
-  }
-  50% {
-    opacity: 0.85;
-    background: radial-gradient(
-      circle at center,
-      rgba(144, 238, 144, 0.15) 20%,
-      rgba(0, 0, 0, 0.65) 100%
-    );
-  }
-  100% {
-    opacity: 0.8;
-    background: radial-gradient(
-      circle at center,
-      rgba(144, 238, 144, 0.1) 15%,
-      rgba(0, 0, 0, 0.6) 100%
-    );
-  }
 }
 
 /* Unified Button Styles */
