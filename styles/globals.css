@@ -267,3 +267,26 @@ textarea:focus {
   margin: 15px 0;
   text-align: center;
 }
+
+@keyframes recordingPulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.3;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.recording-dot {
+  font-size: 24px;
+  color: red;
+  margin-right: 8px;
+  display: inline-block;
+  animation: recordingPulse 1s ease-in-out infinite;
+}

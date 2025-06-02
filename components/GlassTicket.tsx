@@ -41,7 +41,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string, role
             >
               {isRecording ? (
                 <>
-                  <span style={{ color: 'red', marginRight: '8px' }}>●</span>
+                  <span className="recording-dot">●</span>
                   Stop Recording
                 </>
               ) : (
