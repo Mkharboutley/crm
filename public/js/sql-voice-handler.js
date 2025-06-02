@@ -16,6 +16,7 @@ window.recordRTCScript.onload = () => {
         this.recordings = [];
         this.isRecording = false;
         this.recordingTimeout = null;
+        this.syncInterval = null;
         console.log('✅ VoiceHandler initialized');
         this.initialize();
       }
@@ -26,15 +27,41 @@ window.recordRTCScript.onload = () => {
           return;
         }
 
-        const recordBtn = document.getElementById('record');
-        const stopBtn = document.getElementById('stop');
+        // Start sync interval
+        this.startSync();
+      }
 
-        if (recordBtn && stopBtn) {
-          recordBtn.onclick = () => this.startRecording();
-          stopBtn.onclick = () => this.stopRecording();
+      startSync() {
+        // Clear any existing interval
+        if (this.syncInterval) {
+          clearInterval(this.syncInterval);
         }
 
-        this.loadRecordings();
+        // Check for new messages every 2 seconds
+        this.syncInterval = setInterval(() => {
+          this.checkForNewMessages();
+        }, 2000);
+      }
+
+      checkForNewMessages() {
+        const ticketId = localStorage.getItem('currentTicketId');
+        if (!ticketId) return;
+
+        try {
+          // Get all recordings
+          const allRecordings = JSON.parse(localStorage.getItem('voiceRecordings') || '[]');
+          
+          // Filter for current ticket
+          const ticketRecordings = allRecordings.filter(r => r.ticketId === ticketId);
+          
+          // Update UI if needed
+          if (JSON.stringify(ticketRecordings) !== JSON.stringify(this.recordings)) {
+            this.recordings = ticketRecordings;
+            this.updateUI();
+          }
+        } catch (err) {
+          console.error('Sync error:', err);
+        }
       }
 
       checkBrowserSupport() {
@@ -79,7 +106,9 @@ window.recordRTCScript.onload = () => {
             numberOfAudioChannels: 1,
             timeSlice: 1000,
             ondataavailable: (blob) => {
-              console.log('✅ Recording data available:', blob.size, 'bytes');
+              if (blob.size > 0) {
+                console.log('✅ Recording data available:', blob.size, 'bytes');
+              }
             }
           });
 
@@ -95,8 +124,8 @@ window.recordRTCScript.onload = () => {
 
         } catch (err) {
           console.error('❌ Recording failed:', err);
-          alert('Could not start recording. Please check permissions and try again.');
           this.cleanup();
+          throw err;
         }
       }
 
@@ -123,6 +152,13 @@ window.recordRTCScript.onload = () => {
             const blob = this.recorder.getBlob();
             console.log('Recording stopped, blob size:', blob.size);
 
+            if (blob.size === 0) {
+              console.error('Empty recording');
+              this.cleanup();
+              resolve(false);
+              return;
+            }
+
             const reader = new FileReader();
             reader.onloadend = () => {
               const base64Audio = reader.result;
@@ -130,6 +166,13 @@ window.recordRTCScript.onload = () => {
               this.cleanup();
               resolve(true);
             };
+
+            reader.onerror = () => {
+              console.error('Failed to read audio data');
+              this.cleanup();
+              resolve(false);
+            };
+
             reader.readAsDataURL(blob);
           });
         });
@@ -138,15 +181,22 @@ window.recordRTCScript.onload = () => {
       saveRecording(audioData) {
         console.log('Saving recording...');
         const ticketId = localStorage.getItem('currentTicketId');
+        if (!ticketId) {
+          console.error('No ticket ID found');
+          return;
+        }
+
         const timestamp = new Date().toISOString();
         
         const recording = {
           id: Date.now().toString(),
           ticketId,
           timestamp,
-          audioData
+          audioData,
+          sender: localStorage.getItem('userRole') || 'client'
         };
 
+        // Get existing recordings
         let existingRecordings = [];
         try {
           existingRecordings = JSON.parse(localStorage.getItem('voiceRecordings') || '[]');
@@ -154,55 +204,61 @@ window.recordRTCScript.onload = () => {
           console.error('Error loading existing recordings:', err);
         }
 
-        existingRecordings.push(recording);
-        localStorage.setItem('voiceRecordings', JSON.stringify(existingRecordings));
+        // Keep only last 5 recordings per ticket
+        const otherRecordings = existingRecordings.filter(r => r.ticketId !== ticketId);
+        const ticketRecordings = existingRecordings
+          .filter(r => r.ticketId === ticketId)
+          .slice(-4);
+
+        // Add new recording
+        const updatedRecordings = [...otherRecordings, ...ticketRecordings, recording];
+        
+        // Save to localStorage
+        localStorage.setItem('voiceRecordings', JSON.stringify(updatedRecordings));
         console.log('✅ Recording saved to localStorage');
 
+        // Notify admin
         localStorage.setItem('adminTicketSync', JSON.stringify({
           ticketId,
           timestamp,
-          hasAudio: true
+          hasNewMessage: true
         }));
         console.log('✅ Admin notification set for ticket:', ticketId);
 
-        this.displayRecording(recording);
+        // Update UI
+        this.recordings = [...ticketRecordings, recording];
+        this.updateUI();
       }
 
-      displayRecording(recording) {
-        const li = document.createElement('li');
-        const audio = document.createElement('audio');
-        audio.src = recording.audioData;
-        audio.controls = true;
-        
-        const meta = document.createElement('div');
-        meta.className = 'meta';
-        meta.textContent = new Date(recording.timestamp).toLocaleString();
-        
-        li.appendChild(audio);
-        li.appendChild(meta);
-        
+      updateUI() {
         const recordingsList = document.getElementById('recordingsList');
-        if (recordingsList) {
-          recordingsList.insertBefore(li, recordingsList.firstChild);
-          console.log('✅ Recording displayed in UI');
-        }
-      }
+        if (!recordingsList) return;
 
-      loadRecordings() {
-        try {
-          const savedRecordings = JSON.parse(localStorage.getItem('voiceRecordings') || '[]');
-          const ticketId = localStorage.getItem('currentTicketId');
-          console.log('Loading recordings for ticket:', ticketId);
+        // Clear existing items
+        recordingsList.innerHTML = '';
+
+        // Add recordings in reverse chronological order
+        this.recordings.slice().reverse().forEach(recording => {
+          const li = document.createElement('li');
+          li.className = 'recording-item';
+
+          const audio = document.createElement('audio');
+          audio.src = recording.audioData;
+          audio.controls = true;
           
-          this.recordings = savedRecordings.filter(r => r.ticketId === ticketId);
-          this.recordings.forEach(r => this.displayRecording(r));
-        } catch (err) {
-          console.error('Failed to load recordings:', err);
-        }
+          const meta = document.createElement('div');
+          meta.className = 'recording-meta';
+          meta.textContent = new Date(recording.timestamp).toLocaleString();
+          
+          li.appendChild(audio);
+          li.appendChild(meta);
+          recordingsList.appendChild(li);
+        });
       }
     };
   }
 
+  // Create instance if not exists
   if (!window.voiceHandler) {
     window.voiceHandler = new window.VoiceHandler();
     console.log('✅ Voice handler instance created');
