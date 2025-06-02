@@ -320,69 +320,39 @@ textarea::placeholder {
 }
 
 /* Audio Player Styles */
-.audio-player {
-  width: 100%;
-  height: 56px;
-  background: #005db0;
-  border-radius: 12px;
-  padding: 0 20px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: white;
-  margin: 8px 0;
+audio {
+  width: 100% !important;
+  margin: 8px 0 !important;
+  border-radius: 12px !important;
+  background: #005db0 !important;
 }
 
-.play-button {
-  background: none;
-  border: none;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: white;
-  padding: 0;
-  margin: 0;
+audio::-webkit-media-controls-panel {
+  background: #005db0 !important;
+  border-radius: 12px !important;
 }
 
-.play-button svg {
-  width: 24px;
-  height: 24px;
-  fill: currentColor;
+audio::-webkit-media-controls-current-time-display,
+audio::-webkit-media-controls-time-remaining-display {
+  color: white !important;
 }
 
-.waveform-container {
-  flex-grow: 1;
-  height: 40px;
-  display: flex;
-  align-items: center;
+audio::-webkit-media-controls-play-button,
+audio::-webkit-media-controls-mute-button {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  border-radius: 50% !important;
+  margin: 0 8px !important;
 }
 
-.waveform {
-  width: 100%;
-  height: 100%;
+audio::-webkit-media-controls-timeline {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  border-radius: 6px !important;
+  margin: 0 8px !important;
+  height: 4px !important;
 }
 
-.time-display {
-  font-size: 14px;
-  font-weight: 500;
-  min-width: 45px;
-  text-align: right;
-}
-
-/* WaveSurfer Customization */
-.wavesurfer-region {
-  background-color: rgba(255, 255, 255, 0.1) !important;
-}
-
-.wavesurfer-handle {
-  background-color: rgba(255, 255, 255, 0.3) !important;
-  width: 2px !important;
-}
-
-.wavesurfer-playhead {
-  background-color: rgba(255, 255, 255, 0.5) !important;
-  width: 2px !important;
+audio::-webkit-media-controls-volume-slider {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  border-radius: 6px !important;
+  padding: 0 8px !important;
 }
