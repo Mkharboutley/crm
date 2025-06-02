@@ -9,6 +9,7 @@ interface VoiceMessage {
   timestamp: string;
   audioData: string;
   sender: string;
+  duration: number;
 }
 
 export default function GlassTicket({ ticketId, role }: { ticketId: string; role: string }) {
@@ -17,7 +18,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
   const [recordingTime, setRecordingTime] = useState(0);
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
-  const [isPlaying, setIsPlaying] = useState<{ [key: string]: boolean }>({});
+  const [playingId, setPlayingId] = useState<string | null>(null);
   const [wavesurfers, setWavesurfers] = useState<{ [key: string]: WaveSurfer }>({});
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -27,11 +28,6 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
     loadMessages();
     return () => cleanup();
   }, [ticketId]);
-
-  useEffect(() => {
-    const interval = setInterval(checkNewMessages, 2000);
-    return () => clearInterval(interval);
-  }, [ticketId, role]);
 
   const cleanup = () => {
     if (audioStream) {
@@ -49,9 +45,8 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
       const ticketMessages = recordings.filter((r: VoiceMessage) => r.ticketId === ticketId);
       setMessages(ticketMessages);
 
-      // Initialize waveforms for existing messages
-      ticketMessages.forEach((message: VoiceMessage) => {
-        initializeWaveform(message.id, message.audioData);
+      ticketMessages.forEach(message => {
+        initializeWaveform(message);
       });
     } catch (err) {
       console.error('Error loading messages:', err);
@@ -59,53 +54,54 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
     }
   };
 
-  const initializeWaveform = async (messageId: string, audioData: string) => {
-    if (wavesurfers[messageId]) {
-      wavesurfers[messageId].destroy();
-    }
-
-    const container = document.getElementById(`waveform-${messageId}`);
+  const initializeWaveform = async (message: VoiceMessage) => {
+    const container = document.getElementById(`waveform-${message.id}`);
     if (!container) return;
+
+    if (wavesurfers[message.id]) {
+      wavesurfers[message.id].destroy();
+    }
 
     const wavesurfer = WaveSurfer.create({
       container,
-      waveColor: '#4a9eff',
-      progressColor: '#2c5282',
-      cursorColor: '#ffffff',
+      height: 30,
+      waveColor: '#ffffff',
+      progressColor: '#ffffff',
+      cursorColor: 'transparent',
       barWidth: 2,
       barGap: 3,
-      height: 40,
+      barRadius: 3,
       normalize: true,
-      responsive: true
+      responsive: true,
+      interact: false
     });
 
     wavesurfer.on('finish', () => {
-      setIsPlaying(prev => ({ ...prev, [messageId]: false }));
+      setPlayingId(null);
     });
 
-    await wavesurfer.load(audioData);
-
+    await wavesurfer.load(message.audioData);
+    
     setWavesurfers(prev => ({
       ...prev,
-      [messageId]: wavesurfer
+      [message.id]: wavesurfer
     }));
   };
 
-  const checkNewMessages = () => {
-    if (role === 'admin') {
-      const sync = localStorage.getItem('adminTicketSync');
-      if (sync) {
-        try {
-          const { ticketId: syncedTicketId } = JSON.parse(sync);
-          if (syncedTicketId === ticketId) {
-            loadMessages();
-            localStorage.removeItem('adminTicketSync');
-            toast.info('New voice message received!');
-          }
-        } catch (err) {
-          console.error('Error checking messages:', err);
-        }
+  const togglePlayback = (messageId: string) => {
+    const wavesurfer = wavesurfers[messageId];
+    if (!wavesurfer) return;
+
+    if (playingId === messageId) {
+      wavesurfer.pause();
+      setPlayingId(null);
+    } else {
+      // Stop any currently playing audio
+      if (playingId && wavesurfers[playingId]) {
+        wavesurfers[playingId].pause();
       }
+      wavesurfer.play();
+      setPlayingId(messageId);
     }
   };
 
@@ -126,7 +122,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
       startTimer();
     } catch (err) {
       console.error('Error starting recording:', err);
-      toast.error('Failed to start recording. Please check microphone permissions.');
+      toast.error('Failed to start recording');
     }
   };
 
@@ -144,14 +140,10 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
   };
 
   const stopRecording = () => {
-    if (mediaRecorder && mediaRecorder.state === 'recording') {
+    if (mediaRecorder?.state === 'recording') {
       mediaRecorder.stop();
-      if (audioStream) {
-        audioStream.getTracks().forEach(track => track.stop());
-      }
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-      }
+      audioStream?.getTracks().forEach(track => track.stop());
+      if (timerRef.current) clearInterval(timerRef.current);
       setIsRecording(false);
       setRecordingTime(0);
     }
@@ -160,24 +152,28 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
   const handleRecordingStop = async () => {
     const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
     const audioUrl = URL.createObjectURL(blob);
-    const reader = new FileReader();
-
-    reader.onloadend = () => {
-      const base64Audio = reader.result as string;
-      saveMessage(base64Audio);
-    };
-
-    reader.readAsDataURL(blob);
+    
+    // Get audio duration
+    const audio = new Audio(audioUrl);
+    audio.addEventListener('loadedmetadata', () => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64Audio = reader.result as string;
+        saveMessage(base64Audio, Math.round(audio.duration));
+      };
+      reader.readAsDataURL(blob);
+    });
   };
 
-  const saveMessage = (audioData: string) => {
+  const saveMessage = (audioData: string, duration: number) => {
     const messageId = uuidv4();
     const message: VoiceMessage = {
       id: messageId,
       ticketId,
       timestamp: new Date().toISOString(),
       audioData,
-      sender: role
+      sender: role,
+      duration
     };
 
     const updatedMessages = [...messages, message];
@@ -191,28 +187,14 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
       }));
     }
 
-    initializeWaveform(messageId, audioData);
-    toast.success('Voice message saved successfully');
-  };
-
-  const togglePlayback = (messageId: string) => {
-    const wavesurfer = wavesurfers[messageId];
-    if (!wavesurfer) return;
-
-    if (isPlaying[messageId]) {
-      wavesurfer.pause();
-    } else {
-      wavesurfer.play();
-    }
-
-    setIsPlaying(prev => ({
-      ...prev,
-      [messageId]: !prev[messageId]
-    }));
+    initializeWaveform(message);
+    toast.success('Voice message sent');
   };
 
   const formatTime = (seconds: number) => {
-    return `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}`;
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   return (
@@ -222,38 +204,45 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
       </h2>
 
       {role === 'client' && (
-        <div className="mb-6">
-          <button
-            onClick={isRecording ? stopRecording : startRecording}
-            className="voice-btn w-full"
-          >
-            {isRecording ? (
-              <>
-                <span className="recording-dot"></span>
-                Stop Recording ({formatTime(recordingTime)})
-              </>
-            ) : (
-              'Start Recording'
-            )}
-          </button>
-        </div>
+        <button
+          onClick={isRecording ? stopRecording : startRecording}
+          className="voice-btn w-full mb-6"
+        >
+          {isRecording ? (
+            <>
+              <span className="recording-dot"></span>
+              Stop Recording ({formatTime(recordingTime)})
+            </>
+          ) : (
+            'Start Recording'
+          )}
+        </button>
       )}
 
       <div className="messages-container">
         {messages.map((message) => (
           <div key={message.id} className="message-item">
             <div className="message-header">
-              <span className="sender">{message.sender === 'client' ? 'Client' : 'Admin'}</span>
-              <span className="timestamp">{new Date(message.timestamp).toLocaleString()}</span>
+              <span className="message-sender">
+                {message.sender === 'client' ? 'Client' : 'Admin'}
+              </span>
+              <span className="message-time">
+                {new Date(message.timestamp).toLocaleString()}
+              </span>
             </div>
-            <div className="waveform-container">
-              <div id={`waveform-${message.id}`} className="waveform"></div>
-              <button
-                onClick={() => togglePlayback(message.id)}
+            <div className="audio-player">
+              <button 
                 className="play-button"
+                onClick={() => togglePlayback(message.id)}
               >
-                {isPlaying[message.id] ? '⏸️' : '▶️'}
+                {playingId === message.id ? '⏸️' : '▶️'}
               </button>
+              <div className="waveform-container">
+                <div id={`waveform-${message.id}`} className="waveform"></div>
+              </div>
+              <div className="time-display">
+                {formatTime(message.duration)}
+              </div>
             </div>
           </div>
         ))}

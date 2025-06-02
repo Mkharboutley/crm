@@ -281,6 +281,7 @@ textarea::placeholder {
   padding: 16px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
+  margin-bottom: 16px;
 }
 
 .message-item:hover {
@@ -292,54 +293,84 @@ textarea::placeholder {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
+  padding: 0 4px;
+}
+
+.message-sender {
   font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
 }
 
-.sender {
-  color: #4a9eff;
-  font-weight: 500;
-}
-
-.timestamp {
+.message-time {
+  font-size: 12px;
   color: rgba(255, 255, 255, 0.5);
 }
 
-/* Waveform Components */
-.waveform-container {
+/* Audio Player Styles */
+.audio-player {
+  width: 100%;
+  height: 56px;
+  background: #0095ff;
+  border-radius: 28px;
+  padding: 0 20px;
   display: flex;
   align-items: center;
   gap: 12px;
-  background: rgba(0, 0, 0, 0.2);
-  padding: 8px;
-  border-radius: 20px;
-}
-
-.waveform {
-  flex-grow: 1;
-  height: 40px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 20px;
+  color: white;
+  margin: 8px 0;
 }
 
 .play-button {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
+  background: none;
   border: none;
-  cursor: pointer;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  cursor: pointer;
+  color: white;
+  padding: 0;
+  margin: 0;
 }
 
-.play-button:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: scale(1.1);
+.play-button svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
 }
 
-.play-button:active {
-  transform: scale(0.95);
+.waveform-container {
+  flex-grow: 1;
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.waveform {
+  width: 100%;
+  height: 100%;
+}
+
+.time-display {
+  font-size: 14px;
+  font-weight: 500;
+  min-width: 45px;
+  text-align: right;
+}
+
+/* WaveSurfer Customization */
+.wavesurfer-region {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.wavesurfer-handle {
+  background-color: rgba(255, 255, 255, 0.3) !important;
+  width: 2px !important;
+}
+
+.wavesurfer-playhead {
+  background-color: rgba(255, 255, 255, 0.5) !important;
+  width: 2px !important;
 }
