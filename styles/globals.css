@@ -1,3 +1,86 @@
+/* ============================
+   General Reset & Typography
+============================ */
+* {
+  box-sizing: border-box;
+  font-family: 'Almarai', sans-serif !important;
+  margin: 0;
+  padding: 0;
+}
+
+/* ============================
+   Full Viewport Setup
+============================ */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  font-family: 'Almarai', sans-serif;
+  overflow: hidden;
+  background: #132540;
+}
+
+/* Animated Particles Background */
+.particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.8;
+  background:
+    radial-gradient(circle at 20% 35%, rgba(80, 180, 255, 0.4) 2px, transparent 2.5px),
+    radial-gradient(circle at 85% 44%, rgba(160, 100, 255, 0.4) 2px, transparent 2.5px),
+    radial-gradient(circle at 46% 52%, rgba(255, 130, 255, 0.4) 2px, transparent 2.5px);
+  background-size: 180px 180px;
+  animation: particlesDrift 4s linear infinite;
+  filter: blur(0.5px);
+}
+
+@keyframes particlesDrift {
+  0% {
+    background-position: 0 0;
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.05);
+  }
+  100% {
+    background-position: 180px 180px;
+    opacity: 0.8;
+    transform: scale(1);
+  }
+}
+
+.glass-root {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  width: 100%;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.01);
+}
+
+.gradient-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(
+    circle at center,
+    transparent 0%,
+    rgba(0, 0, 0, 0.5) 100%
+  );
+  z-index: 0.5;
+  pointer-events: none;
+}
+
 /* Voice Message Components */
 .voice-btn {
   border-radius: 8px;
@@ -9,6 +92,7 @@
   height: 32px;
   font-size: 12px;
   margin-bottom: 8px;
+  transition: all 0.3s ease;
 }
 
 .voice-btn.recording {
@@ -18,6 +102,7 @@
     rgba(255, 0, 0, 0.5) 100%
   );
   animation: recordingFlicker 1s infinite;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
 }
 
 @keyframes recordingFlicker {
@@ -34,6 +119,7 @@
       rgba(255, 0, 0, 0.5) 0%,
       rgba(255, 0, 0, 0.7) 100%
     );
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
   }
   100% {
     background: linear-gradient(
@@ -67,4 +153,65 @@
     transform: scale(1);
     opacity: 1;
   }
+}
+
+/* Messages Container */
+.messages-container {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding-right: 8px;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%);
+}
+
+.messages-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.messages-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.messages-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.message-item {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 28px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  margin-bottom: 16px;
+  min-height: 100px;
+  flex-shrink: 0;
+}
+
+.message-item:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateX(2px);
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  padding: 0 4px;
+}
+
+.message-sender {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.message-time {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
 }
