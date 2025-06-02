@@ -31,42 +31,55 @@ html, body {
   z-index: 0;
   pointer-events: none;
   opacity: 1;
-  background: 
-    linear-gradient(45deg, rgba(0, 0, 0, 0.7), rgba(20, 20, 20, 0.7)),
-    url('https://images.pexels.com/photos/466685/pexels-photo-466685.jpeg?auto=compress&cs=tinysrgb&w=1920');
-  background-size: 150% 150%;
-  background-position: center;
-  animation: urbanMove 25s ease-out infinite;
-  filter: contrast(140%) brightness(60%);
-  transform-origin: center;
-  will-change: transform, filter, background-position;
+  background: radial-gradient(circle at center, #132540, #0a1420);
+  overflow: hidden;
 }
 
-@keyframes urbanMove {
+.particles::before {
+  content: '';
+  position: absolute;
+  width: 150vmax;
+  height: 150vmax;
+  background: radial-gradient(circle at center,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 45%,
+    transparent 70%);
+  border-radius: 50%;
+  top: -50%;
+  left: -25%;
+  animation: floatCircle1 25s linear infinite;
+}
+
+.particles::after {
+  content: '';
+  position: absolute;
+  width: 120vmax;
+  height: 120vmax;
+  background: radial-gradient(circle at center,
+    rgba(255, 255, 255, 0.15) 0%,
+    rgba(255, 255, 255, 0.05) 45%,
+    transparent 70%);
+  border-radius: 50%;
+  bottom: -40%;
+  right: -15%;
+  animation: floatCircle2 20s linear infinite;
+}
+
+@keyframes floatCircle1 {
   0% {
-    background-size: 150% 150%;
-    background-position: 0% 0%;
-    filter: contrast(140%) brightness(60%);
-  }
-  25% {
-    background-size: 160% 160%;
-    background-position: 10% 5%;
-    filter: contrast(150%) brightness(55%);
-  }
-  50% {
-    background-size: 155% 155%;
-    background-position: 5% 10%;
-    filter: contrast(145%) brightness(50%);
-  }
-  75% {
-    background-size: 160% 160%;
-    background-position: -5% 5%;
-    filter: contrast(150%) brightness(55%);
+    transform: rotate(0deg) translate(5%, 5%) rotate(0deg);
   }
   100% {
-    background-size: 150% 150%;
-    background-position: 0% 0%;
-    filter: contrast(140%) brightness(60%);
+    transform: rotate(360deg) translate(5%, 5%) rotate(-360deg);
+  }
+}
+
+@keyframes floatCircle2 {
+  0% {
+    transform: rotate(0deg) translate(-5%, -5%) rotate(0deg);
+  }
+  100% {
+    transform: rotate(-360deg) translate(-5%, -5%) rotate(360deg);
   }
 }
 
