@@ -187,6 +187,7 @@
 .ticketLine {
   margin-bottom: 32px;
   font-size: 1.05rem;
-  line-height: 3;
+  line-height: 3.5;
   color: rgba(255, 255, 255, 0.9);
+  padding: 0.5rem 0;
 }
