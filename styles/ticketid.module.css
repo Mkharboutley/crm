@@ -104,12 +104,13 @@
 }
 
 .ticketContainer {
-  min-height: 130vh;
+  min-height: 100vh;
   width: 100%;
   padding: 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   overflow-y: auto;
   overflow-x: hidden;
   box-sizing: border-box;
@@ -163,11 +164,11 @@
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-radius: 28px;
-  padding: 2.5rem 3rem 4rem;
+  padding: 2.5rem 3rem;
   color: white;
   text-align: right;
-  width: 85%;
-  max-width: 400px;
+  width: 95%;
+  max-width: 600px;
   box-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.15),
     inset 0 1px 1px rgba(255, 255, 255, 0.08);
@@ -177,7 +178,7 @@
   min-height: 400px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   position: relative;
-  margin-top: 2rem;
+  margin: 0 auto;
 }
 
 .glassCard:hover {
