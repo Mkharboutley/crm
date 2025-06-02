@@ -169,8 +169,8 @@
 }
 
 .ticketLine {
-  margin-bottom: 12px;
+  margin-bottom: 24px;
   font-size: 1.05rem;
-  line-height: 1.8;
+  line-height: 2.4;
   color: rgba(255, 255, 255, 0.9);
 }
