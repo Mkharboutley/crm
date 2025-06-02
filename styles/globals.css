@@ -41,13 +41,13 @@ html, body {
   width: 120vmax;
   height: 120vmax;
   background: radial-gradient(circle at center,
-    rgba(255, 255, 255, 0.15) 0%,
-    rgba(255, 255, 255, 0.08) 35%,
+    rgba(255, 255, 255, 0.2) 0%,
+    rgba(255, 255, 255, 0.1) 35%,
     transparent 60%);
   border-radius: 50%;
   top: -40%;
   left: -20%;
-  animation: floatCircle1 15s linear infinite;
+  animation: floatCircle1 8s linear infinite;
 }
 
 .particles::after {
@@ -56,30 +56,30 @@ html, body {
   width: 100vmax;
   height: 100vmax;
   background: radial-gradient(circle at center,
-    rgba(255, 255, 255, 0.2) 0%,
-    rgba(255, 255, 255, 0.1) 35%,
+    rgba(255, 255, 255, 0.25) 0%,
+    rgba(255, 255, 255, 0.15) 35%,
     transparent 60%);
   border-radius: 50%;
   bottom: -30%;
   right: -10%;
-  animation: floatCircle2 12s linear infinite;
+  animation: floatCircle2 6s linear infinite;
 }
 
 @keyframes floatCircle1 {
   0% {
-    transform: rotate(0deg) translate(3%, 3%) rotate(0deg);
+    transform: rotate(0deg) translate(4%, 4%) rotate(0deg);
   }
   100% {
-    transform: rotate(360deg) translate(3%, 3%) rotate(-360deg);
+    transform: rotate(360deg) translate(4%, 4%) rotate(-360deg);
   }
 }
 
 @keyframes floatCircle2 {
   0% {
-    transform: rotate(0deg) translate(-3%, -3%) rotate(0deg);
+    transform: rotate(0deg) translate(-4%, -4%) rotate(0deg);
   }
   100% {
-    transform: rotate(-360deg) translate(-3%, -3%) rotate(360deg);
+    transform: rotate(-360deg) translate(-4%, -4%) rotate(360deg);
   }
 }
 
@@ -106,7 +106,7 @@ html, body {
   );
   z-index: 0.5;
   pointer-events: none;
-  animation: pulseOverlay 8s ease-in-out infinite;
+  animation: pulseOverlay 4s ease-in-out infinite;
 }
 
 @keyframes pulseOverlay {
