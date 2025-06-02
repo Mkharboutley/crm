@@ -12,10 +12,11 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
-  padding: 1.5rem;
+  padding: 2rem;
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
+  border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 .headerTitle {
@@ -25,7 +26,7 @@
 }
 
 .header h1 {
-  font-size: 2rem;
+  font-size: 2.5rem;
   color: #fff;
   margin: 0;
   font-weight: 600;
@@ -37,7 +38,7 @@
 
 .subtitle {
   color: rgba(255, 255, 255, 0.6);
-  font-size: 0.95rem;
+  font-size: 1rem;
   margin: 0;
 }
 
@@ -47,58 +48,68 @@
 }
 
 .settingsToggle {
-  padding: 0.6rem 1.2rem;
-  border-radius: 8px;
+  padding: 0.8rem 1.6rem;
+  border-radius: 12px;
   border: none;
   background: rgba(255, 255, 255, 0.1);
   color: white;
   cursor: pointer;
   transition: all 0.2s;
   backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-weight: 500;
 }
 
 .settingsToggle:hover {
   background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
 }
 
 .filterBar {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin: 1.5rem 0;
-  padding: 1.5rem;
+  gap: 1.5rem;
+  margin: 2rem 0;
+  padding: 2rem;
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
 }
 
 .filterBar label {
-  color: #fff;
+  color: rgba(255, 255, 255, 0.8);
   margin-bottom: 0.5rem;
   display: block;
+  font-weight: 500;
 }
 
 .filterBar select,
 .filterBar input {
   width: 100%;
-  padding: 0.7rem;
-  border-radius: 6px;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(255, 255, 255, 0.05);
   color: white;
   backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
 }
 
 .filterBar select:focus,
 .filterBar input:focus {
   outline: none;
   border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
 }
 
 .tableWrapper {
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  padding: 1rem;
+  border-radius: 20px;
+  padding: 1.5rem;
   overflow-x: auto;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .table {
@@ -110,22 +121,26 @@
 
 .table th {
   text-align: left;
-  padding: 1rem;
+  padding: 1.2rem;
   background: rgba(255, 255, 255, 0.1);
   font-weight: 500;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 .table th:first-child {
-  border-top-left-radius: 8px;
+  border-top-left-radius: 12px;
 }
 
 .table th:last-child {
-  border-top-right-radius: 8px;
+  border-top-right-radius: 12px;
 }
 
 .table td {
-  padding: 1rem;
+  padding: 1.2rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.95rem;
 }
 
 .table tr:hover {
@@ -133,53 +148,61 @@
 }
 
 .badge {
-  padding: 0.4rem 0.8rem;
+  padding: 0.5rem 1rem;
   border-radius: 20px;
   font-size: 0.85rem;
   font-weight: 500;
   text-transform: uppercase;
   display: inline-block;
+  letter-spacing: 0.5px;
 }
 
 .requested {
   background: rgba(255, 193, 7, 0.2);
   color: #ffc107;
+  border: 1px solid rgba(255, 193, 7, 0.3);
 }
 
 .assigned {
   background: rgba(33, 150, 243, 0.2);
   color: #2196f3;
+  border: 1px solid rgba(33, 150, 243, 0.3);
 }
 
 .completed {
   background: rgba(76, 175, 80, 0.2);
   color: #4caf50;
+  border: 1px solid rgba(76, 175, 80, 0.3);
 }
 
 .actionBtn {
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1.2rem;
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
   cursor: pointer;
   font-size: 0.9rem;
   transition: all 0.2s;
   background: rgba(255, 255, 255, 0.1);
   color: white;
   margin-right: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .actionBtn:hover {
   background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
 }
 
 .actionBtn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
 .cancelBtn {
   background: rgba(244, 67, 54, 0.2);
   color: #f44336;
+  border: 1px solid rgba(244, 67, 54, 0.3);
 }
 
 .cancelBtn:hover {
@@ -189,17 +212,19 @@
 /* Settings Panel Styles */
 .settingsPanel {
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  padding: 1.5rem;
+  border-radius: 20px;
+  padding: 2rem;
   margin-bottom: 2rem;
   color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .settingsHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .settingsGrid {
@@ -209,8 +234,9 @@
 
 .settingGroup {
   background: rgba(255, 255, 255, 0.05);
-  padding: 1.5rem;
-  border-radius: 8px;
+  padding: 1.8rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .settingRow {
@@ -223,46 +249,59 @@
 .settingRow input,
 .settingRow select {
   width: 200px;
-  padding: 0.5rem;
-  border-radius: 4px;
+  padding: 0.8rem;
+  border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   background: rgba(255, 255, 255, 0.1);
   color: white;
+  transition: all 0.3s ease;
+}
+
+.settingRow input:focus,
+.settingRow select:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
 }
 
 .saveBtn {
   background: rgba(76, 175, 80, 0.2);
   color: #4caf50;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 6px;
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  padding: 0.8rem 1.6rem;
+  border-radius: 12px;
   cursor: pointer;
   margin-right: 1rem;
+  font-weight: 500;
+  transition: all 0.2s;
 }
 
 .saveBtn:hover {
   background: rgba(76, 175, 80, 0.3);
+  transform: translateY(-2px);
 }
 
 /* Stats Section */
 .statsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
   margin-bottom: 2rem;
 }
 
 .statCard {
   background: rgba(255, 255, 255, 0.05);
-  padding: 1.5rem;
-  border-radius: 12px;
+  padding: 1.8rem;
+  border-radius: 16px;
   text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
 }
 
 .statNumber {
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: bold;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.8rem;
   background: linear-gradient(45deg, #2196f3, #4caf50);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -270,39 +309,6 @@
 
 .statLabel {
   color: rgba(255, 255, 255, 0.7);
-  font-size: 0.9rem;
-}
-
-/* Voice Message Section */
-.voiceSection {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-top: 2rem;
-}
-
-.voiceHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.voiceList {
-  display: grid;
-  gap: 1rem;
-}
-
-.voiceMessage {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 1rem;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.voiceControls {
-  display: flex;
-  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
 }
