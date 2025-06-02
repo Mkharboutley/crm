@@ -16,13 +16,13 @@ window.recordRTCScript.onload = () => {
         this.recordings = [];
         this.isRecording = false;
         this.recordingTimeout = null;
-        console.log('VoiceHandler initialized');
+        console.log('✅ VoiceHandler initialized');
         this.initialize();
       }
 
       initialize() {
         if (!this.checkBrowserSupport()) {
-          console.warn('Browser does not support required features');
+          console.warn('❌ Browser does not support required features');
           return;
         }
 
@@ -38,18 +38,7 @@ window.recordRTCScript.onload = () => {
       }
 
       checkBrowserSupport() {
-        const hasMediaDevices = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
-        const hasAudioContext = !!(window.AudioContext || window.webkitAudioContext);
-        
-        if (!hasMediaDevices || !hasAudioContext) {
-          const recordBtn = document.getElementById('record');
-          if (recordBtn) {
-            recordBtn.disabled = true;
-            recordBtn.title = 'Recording not supported in this browser';
-          }
-          return false;
-        }
-        return true;
+        return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
       }
 
       async requestPermissions() {
@@ -67,10 +56,6 @@ window.recordRTCScript.onload = () => {
         try {
           console.log('Starting recording...');
           
-          if (!this.checkBrowserSupport()) {
-            throw new Error('Recording not supported in this browser');
-          }
-
           const hasPermission = await this.requestPermissions();
           if (!hasPermission) {
             throw new Error('Microphone permission denied');
@@ -99,7 +84,7 @@ window.recordRTCScript.onload = () => {
 
           this.recorder.startRecording();
           this.isRecording = true;
-          console.log('Recording started successfully');
+          console.log('✅ Recording started');
 
           // Set 1-minute timeout
           this.recordingTimeout = setTimeout(() => {
@@ -108,8 +93,8 @@ window.recordRTCScript.onload = () => {
           }, 60000);
 
         } catch (err) {
-          console.error('Recording failed:', err);
-          alert(err.message || 'Could not start recording. Please check permissions and try again.');
+          console.error('❌ Recording failed:', err);
+          alert('Could not start recording. Please check permissions and try again.');
           this.cleanup();
         }
       }
@@ -170,16 +155,14 @@ window.recordRTCScript.onload = () => {
 
         existingRecordings.push(recording);
         localStorage.setItem('voiceRecordings', JSON.stringify(existingRecordings));
-        console.log('Recording saved to localStorage');
+        console.log('✅ Recording saved to localStorage');
 
-        if (localStorage.getItem('clientRequest')) {
-          localStorage.setItem('adminTicketSync', JSON.stringify({
-            ticketId,
-            timestamp,
-            hasAudio: true
-          }));
-          console.log('Admin notification set for ticket:', ticketId);
-        }
+        localStorage.setItem('adminTicketSync', JSON.stringify({
+          ticketId,
+          timestamp,
+          hasAudio: true
+        }));
+        console.log('✅ Admin notification set for ticket:', ticketId);
 
         this.displayRecording(recording);
       }
@@ -200,7 +183,7 @@ window.recordRTCScript.onload = () => {
         const recordingsList = document.getElementById('recordingsList');
         if (recordingsList) {
           recordingsList.insertBefore(li, recordingsList.firstChild);
-          console.log('Recording displayed in UI');
+          console.log('✅ Recording displayed in UI');
         }
       }
 
@@ -221,6 +204,6 @@ window.recordRTCScript.onload = () => {
 
   if (!window.voiceHandler) {
     window.voiceHandler = new window.VoiceHandler();
-    console.log('Voice handler instance created');
+    console.log('✅ Voice handler instance created');
   }
 };
