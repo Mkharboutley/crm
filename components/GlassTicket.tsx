@@ -14,7 +14,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
   const [isRecording, setIsRecording] = useState(false);
   const [messages, setMessages] = useState<VoiceMessage[]>([]);
   const [recordingTime, setRecordingTime] = useState(0);
-  const [RecordRTC, setRecordRTC] = useState<any>(null);
+  const [recordRTCModule, setRecordRTCModule] = useState<any>(null);
   const [currentAudio, setCurrentAudio] = useState<string | null>(null);
   const [WaveSurferLib, setWaveSurferLib] = useState<any>(null);
   
@@ -27,7 +27,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
     // Only run on client side
     if (typeof window !== 'undefined') {
       import('recordrtc').then(module => {
-        setRecordRTC(module.default);
+        setRecordRTCModule(module.default);
       });
       import('wavesurfer.js').then(module => {
         setWaveSurferLib(module.default);
@@ -73,7 +73,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
   };
 
   const startRecording = async () => {
-    if (!RecordRTC) {
+    if (!recordRTCModule) {
       toast.error('Recording functionality not ready');
       return;
     }
@@ -88,10 +88,10 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
       });
       
       streamRef.current = stream;
-      recorderRef.current = new RecordRTC(stream, {
+      recorderRef.current = new recordRTCModule(stream, {
         type: 'audio',
         mimeType: 'audio/webm',
-        recorderType: RecordRTC.StereoAudioRecorder,
+        recorderType: recordRTCModule.StereoAudioRecorder,
         numberOfAudioChannels: 1,
         timeSlice: 1000,
         desiredSampRate: 16000,
