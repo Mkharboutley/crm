@@ -10,14 +10,7 @@ import {
   Timestamp,
 } from 'firebase/firestore';
 import { firebaseApp } from '@/utils/firebase';
-import dynamic from 'next/dynamic';
 import styles from '@/styles/ScanClose.module.css';
-
-// Import QrScanner only on client side
-const QrScanner = dynamic(
-  () => import('qr-scanner').then(mod => mod.default),
-  { ssr: false }
-);
 
 export default function ScanClosePage() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -42,6 +35,10 @@ export default function ScanClosePage() {
         if (scannerRef.current) {
           scannerRef.current.destroy();
         }
+
+        // Dynamically import QrScanner
+        const QrScannerModule = await import('qr-scanner');
+        const QrScanner = QrScannerModule.default;
 
         const scanner = new QrScanner(
           videoRef.current,
