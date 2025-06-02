@@ -230,6 +230,26 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.settingsTitle {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.settingsTitle h3 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+}
+
+.settingsSubtitle {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.95rem;
 }
 
 .settingsGrid {
@@ -242,6 +262,27 @@
   padding: 1.8rem;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.groupTitle {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: white;
+  margin: 0 0 1.5rem 0;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.groupTitle::before {
+  content: '';
+  display: block;
+  width: 4px;
+  height: 1.2rem;
+  background: linear-gradient(to bottom, #4caf50, #2196f3);
+  border-radius: 2px;
 }
 
 .settingRow {
