@@ -3,6 +3,9 @@ import { toast } from 'react-toastify';
 import { v4 as uuidv4 } from 'uuid';
 import dynamic from 'next/dynamic';
 
+// Dynamically import WaveSurfer with no SSR
+const WaveSurfer = dynamic(() => import('wavesurfer.js'), { ssr: false });
+
 interface VoiceMessage {
   id: string;
   ticketId: string;
@@ -16,44 +19,52 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
   const [messages, setMessages] = useState<VoiceMessage[]>([]);
   const [recordingTime, setRecordingTime] = useState(0);
   const [RecordRTC, setRecordRTC] = useState<any>(null);
+  const [currentAudio, setCurrentAudio] = useState<string | null>(null);
   
   const recorderRef = useRef<any>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const timerRef = useRef<number | null>(null);
+  const wavesurferRefs = useRef<{ [key: string]: any }>({});
 
   useEffect(() => {
-    // Dynamically import RecordRTC only on the client side
+    // Only run on client side
     if (typeof window !== 'undefined') {
       import('recordrtc').then(module => {
         setRecordRTC(module.default);
       });
+      loadMessages();
+      const interval = window.setInterval(loadMessages, 2000);
+      return () => {
+        window.clearInterval(interval);
+        cleanup();
+      };
     }
-
-    loadMessages();
-    const interval = setInterval(loadMessages, 2000);
-    return () => {
-      clearInterval(interval);
-      cleanup();
-    };
   }, [ticketId]);
 
   const cleanup = () => {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
     }
     if (timerRef.current) {
       window.clearInterval(timerRef.current);
+      timerRef.current = null;
     }
     if (recorderRef.current) {
       recorderRef.current.destroy();
+      recorderRef.current = null;
     }
+    Object.values(wavesurferRefs.current).forEach(wavesurfer => {
+      wavesurfer.destroy();
+    });
+    wavesurferRefs.current = {};
   };
 
   const loadMessages = () => {
     try {
-      const allMessages = JSON.parse(localStorage.getItem('voiceMessages') || '[]');
-      const ticketMessages = allMessages
-        .filter((m: VoiceMessage) => m.ticketId === ticketId)
+      const recordings = JSON.parse(localStorage.getItem('voiceRecordings') || '[]');
+      const ticketMessages = recordings
+        .filter((r: VoiceMessage) => r.ticketId === ticketId)
         .slice(-5);
       setMessages(ticketMessages);
     } catch (err) {
@@ -68,14 +79,14 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
     }
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
+      const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
           autoGainControl: true
-        }
+        } 
       });
-
+      
       streamRef.current = stream;
       recorderRef.current = new RecordRTC(stream, {
         type: 'audio',
@@ -85,15 +96,16 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
         timeSlice: 1000,
         desiredSampRate: 16000,
       });
-
+      
       recorderRef.current.startRecording();
       setIsRecording(true);
       startTimer();
-
+      
       toast.info('Recording started');
     } catch (err) {
-      console.error('Recording error:', err);
-      toast.error('Could not access microphone');
+      console.error('Error starting recording:', err);
+      toast.error('Failed to access microphone');
+      cleanup();
     }
   };
 
@@ -114,9 +126,9 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
     if (!recorderRef.current || !streamRef.current) return;
 
     return new Promise<void>(resolve => {
-      recorderRef.current?.stopRecording(() => {
-        const blob = recorderRef.current?.getBlob();
-        if (!blob) {
+      recorderRef.current.stopRecording(() => {
+        const blob = recorderRef.current.getBlob();
+        if (!blob || blob.size === 0) {
           toast.error('No audio recorded');
           cleanup();
           resolve();
@@ -153,15 +165,15 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
       sender: role
     };
 
-    const allMessages = JSON.parse(localStorage.getItem('voiceMessages') || '[]');
-    const otherMessages = allMessages.filter((m: VoiceMessage) => m.ticketId !== ticketId);
-    const ticketMessages = allMessages
-      .filter((m: VoiceMessage) => m.ticketId === ticketId)
+    const allRecordings = JSON.parse(localStorage.getItem('voiceRecordings') || '[]');
+    const otherRecordings = allRecordings.filter((r: VoiceMessage) => r.ticketId !== ticketId);
+    const ticketRecordings = allRecordings
+      .filter((r: VoiceMessage) => r.ticketId === ticketId)
       .slice(-4);
 
-    localStorage.setItem('voiceMessages', JSON.stringify([
-      ...otherMessages,
-      ...ticketMessages,
+    localStorage.setItem('voiceRecordings', JSON.stringify([
+      ...otherRecordings,
+      ...ticketRecordings,
       message
     ]));
 
@@ -181,6 +193,44 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const togglePlayback = async (messageId: string, audioData: string) => {
+    if (typeof window === 'undefined') return;
+
+    if (currentAudio === messageId) {
+      wavesurferRefs.current[messageId]?.stop();
+      setCurrentAudio(null);
+    } else {
+      if (currentAudio) {
+        wavesurferRefs.current[currentAudio]?.stop();
+      }
+      
+      if (!wavesurferRefs.current[messageId]) {
+        const container = document.getElementById(`waveform-${messageId}`);
+        if (!container) return;
+
+        const wavesurfer = WaveSurfer.create({
+          container,
+          waveColor: '#4a9eff',
+          progressColor: '#2c5282',
+          cursorColor: '#2c5282',
+          barWidth: 2,
+          barGap: 1,
+          height: 30,
+          normalize: true
+        });
+
+        wavesurfer.on('finish', () => setCurrentAudio(null));
+        const response = await fetch(audioData);
+        const blob = await response.blob();
+        await wavesurfer.loadBlob(blob);
+        wavesurferRefs.current[messageId] = wavesurfer;
+      }
+
+      wavesurferRefs.current[messageId]?.play();
+      setCurrentAudio(messageId);
+    }
   };
 
   return (
@@ -213,7 +263,17 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
                 {new Date(message.timestamp).toLocaleString()}
               </span>
             </div>
-            <audio src={message.audioData} controls className="audio-player" />
+            <div 
+              id={`waveform-${message.id}`}
+              className="waveform"
+              onClick={() => togglePlayback(message.id, message.audioData)}
+            />
+            <button 
+              className="play-btn"
+              onClick={() => togglePlayback(message.id, message.audioData)}
+            >
+              {currentAudio === message.id ? 'Pause' : 'Play'}
+            </button>
           </div>
         ))}
       </div>
