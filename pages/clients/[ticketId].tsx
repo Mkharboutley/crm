@@ -40,6 +40,14 @@ export default function ClientTicketView() {
   const [docId, setDocId] = useState('');
   const [loading, setLoading] = useState(true);
   const [countdown, setCountdown] = useState(0);
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   function generateVisitorId() {
     return 'xxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -190,6 +198,14 @@ export default function ClientTicketView() {
   const mins = Math.floor(countdown / 60000).toString().padStart(2, '0');
   const secs = Math.floor((countdown % 60000) / 1000).toString().padStart(2, '0');
 
+  const hours = time.getHours();
+  const minutes = time.getMinutes();
+  const seconds = time.getSeconds();
+
+  const hourDegrees = (hours % 12) * 30 + minutes * 0.5;
+  const minuteDegrees = minutes * 6 + seconds * 0.1;
+  const secondDegrees = seconds * 6;
+
   if (loading) return <p className={styles.container}>Loading ticket...</p>;
   if (!ticket) return <p className={styles.container}>Ticket not found</p>;
 
@@ -199,10 +215,17 @@ export default function ClientTicketView() {
         <source src="/back.mp4" type="video/mp4" />
       </video>
 
-      <div className={styles.ticketContainer} dir="rtl" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', position: 'relative', zIndex: 1 }}>
-        <img src="/logo.png" alt="i-Valet" className={styles.logo} style={{ position: 'fixed', top: '20px', left: '50%', transform: 'translateX(-50%)', zIndex: 10, animation: 'logoBounce 2.5s infinite ease-in-out' }} />
+      <div className={styles.ticketContainer} dir="rtl">
+        <img src="/logo.png" alt="i-Valet" className={styles.logo} />
 
         <div className={styles.glassCard}>
+          <div className={styles.analogClock}>
+            <div className={styles.hourHand} style={{ transform: `rotate(${hourDegrees}deg)` }} />
+            <div className={styles.minuteHand} style={{ transform: `rotate(${minuteDegrees}deg)` }} />
+            <div className={styles.secondHand} style={{ transform: `rotate(${secondDegrees}deg)` }} />
+            <div className={styles.clockCenter} />
+          </div>
+
           <h2 className={styles.title}>معلومات البطاقة</h2>
           <p><strong>رقم البطاقة  : </strong> {ticket.ticket_number}</p>
           <p><strong>رقم اللوحة  : </strong> {ticket.plate_number}</p>

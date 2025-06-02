@@ -84,6 +84,60 @@
   transition: transform 0.2s;
 }
 
+.analogClock {
+  position: absolute;
+  left: -60px;
+  top: 20px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    inset 0 4px 8px rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(5px);
+}
+
+.clockHand {
+  position: absolute;
+  transform-origin: bottom center;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 1px;
+}
+
+.hourHand {
+  composes: clockHand;
+  width: 4px;
+  height: 30px;
+  background: #fff;
+}
+
+.minuteHand {
+  composes: clockHand;
+  width: 3px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.secondHand {
+  composes: clockHand;
+  width: 2px;
+  height: 45px;
+  background: #d74040;
+}
+
+.clockCenter {
+  width: 8px;
+  height: 8px;
+  background: #d74040;
+  border-radius: 50%;
+  position: absolute;
+}
+
 @media (max-width: 480px) {
   .card {
     padding: 1.5rem 1.2rem;
@@ -99,6 +153,12 @@
 
   .detail {
     font-size: 0.95rem;
+  }
+
+  .analogClock {
+    left: -40px;
+    width: 80px;
+    height: 80px;
   }
 }
 
@@ -175,6 +235,7 @@
   justify-content: flex-start;
   min-height: 400px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
 }
 
 .glassCard:hover {
