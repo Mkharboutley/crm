@@ -19,7 +19,6 @@ window.recordRTCScript.onload = () => {
       }
 
       initialize() {
-        // Check browser support first
         if (!this.checkBrowserSupport()) {
           console.warn('Browser does not support required features');
           return;
@@ -33,13 +32,16 @@ window.recordRTCScript.onload = () => {
           stopBtn.onclick = () => this.stopRecording();
         }
 
-        if (localStorage.getItem('dashboardReply') || localStorage.getItem('clientRequest')) {
+        // Load recordings more frequently for admin
+        if (localStorage.getItem('dashboardReply')) {
+          this.loadRecordings();
+          setInterval(() => this.loadRecordings(), 2000); // Check every 2 seconds
+        } else if (localStorage.getItem('clientRequest')) {
           this.loadRecordings();
         }
       }
 
       checkBrowserSupport() {
-        // Check for required APIs
         const hasMediaDevices = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
         const hasAudioContext = !!(window.AudioContext || window.webkitAudioContext);
         
@@ -57,7 +59,7 @@ window.recordRTCScript.onload = () => {
       async requestPermissions() {
         try {
           const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-          stream.getTracks().forEach(track => track.stop()); // Stop immediately, we just wanted permission
+          stream.getTracks().forEach(track => track.stop());
           return true;
         } catch (err) {
           console.error('Permission error:', err);
@@ -91,11 +93,7 @@ window.recordRTCScript.onload = () => {
             sampleRate: 44100,
             desiredSampRate: 16000,
             recorderType: RecordRTC.StereoAudioRecorder,
-            numberOfAudioChannels: 1,
-            timeSlice: 1000,
-            ondataavailable: (blob) => {
-              // Optional: Handle streaming audio data
-            }
+            numberOfAudioChannels: 1
           });
           
           this.recorder.startRecording();
@@ -111,13 +109,6 @@ window.recordRTCScript.onload = () => {
           console.error('Recording failed:', err);
           alert(err.message || 'Could not start recording. Please check permissions and try again.');
           
-          // Reset UI state
-          const recordBtn = document.getElementById('record');
-          const stopBtn = document.getElementById('stop');
-          if (recordBtn) recordBtn.disabled = false;
-          if (stopBtn) stopBtn.disabled = true;
-          
-          // Cleanup any partial setup
           if (this.stream) {
             this.stream.getTracks().forEach(track => track.stop());
             this.stream = null;
@@ -155,40 +146,47 @@ window.recordRTCScript.onload = () => {
       }
 
       saveRecording(blob) {
-        const audioUrl = URL.createObjectURL(blob);
         const ticketId = localStorage.getItem('currentTicketId');
         const timestamp = new Date().toISOString();
         
-        const recording = {
-          ticketId,
-          timestamp,
-          audioUrl,
-          blob
-        };
-
-        this.recordings.push(recording);
-        localStorage.setItem('voiceRecordings', JSON.stringify(
-          this.recordings.map(r => ({
-            ...r,
-            blob: null, // Don't store blobs in localStorage
-            audioUrl: null
-          }))
-        ));
-
-        if (localStorage.getItem('clientRequest')) {
-          localStorage.setItem('adminTicketSync', JSON.stringify({
+        // Convert blob to base64 for storage
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64Audio = reader.result;
+          const recording = {
             ticketId,
-            timestamp
-          }));
-        }
+            timestamp,
+            audio: base64Audio
+          };
 
-        this.displayRecording(recording);
+          // Get existing recordings
+          let recordings = JSON.parse(localStorage.getItem('voiceRecordings') || '[]');
+          recordings.push(recording);
+          localStorage.setItem('voiceRecordings', JSON.stringify(recordings));
+
+          // Notify admin
+          if (localStorage.getItem('clientRequest')) {
+            localStorage.setItem('adminTicketSync', JSON.stringify({
+              ticketId,
+              timestamp,
+              hasNewMessage: true
+            }));
+          }
+
+          this.displayRecording(recording);
+        };
+        reader.readAsDataURL(blob);
       }
 
       displayRecording(recording) {
         const li = document.createElement('li');
         const audio = document.createElement('audio');
-        audio.src = recording.audioUrl;
+        
+        // Convert base64 back to blob for playback
+        if (recording.audio) {
+          const audioBlob = this.base64ToBlob(recording.audio);
+          audio.src = URL.createObjectURL(audioBlob);
+        }
         audio.controls = true;
         
         const timestamp = new Date(recording.timestamp).toLocaleString();
@@ -205,20 +203,33 @@ window.recordRTCScript.onload = () => {
         }
       }
 
+      base64ToBlob(base64) {
+        const parts = base64.split(';base64,');
+        const contentType = parts[0].split(':')[1];
+        const raw = window.atob(parts[1]);
+        const rawLength = raw.length;
+        const uInt8Array = new Uint8Array(rawLength);
+        
+        for (let i = 0; i < rawLength; ++i) {
+          uInt8Array[i] = raw.charCodeAt(i);
+        }
+        
+        return new Blob([uInt8Array], { type: contentType });
+      }
+
       loadRecordings() {
         try {
-          const savedRecordings = JSON.parse(localStorage.getItem('voiceRecordings') || '[]');
+          const recordings = JSON.parse(localStorage.getItem('voiceRecordings') || '[]');
           const ticketId = localStorage.getItem('currentTicketId');
+          const recordingsList = document.getElementById('recordingsList');
           
-          this.recordings = savedRecordings.filter(r => r.ticketId === ticketId);
-          this.recordings.forEach(r => {
-            // We don't store blobs in localStorage, so we just show timestamps
-            this.displayRecording({
-              ...r,
-              audioUrl: null,
-              timestamp: r.timestamp
-            });
-          });
+          if (recordingsList) {
+            recordingsList.innerHTML = ''; // Clear existing list
+            recordings
+              .filter(r => r.ticketId === ticketId)
+              .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+              .forEach(recording => this.displayRecording(recording));
+          }
         } catch (err) {
           console.error('Failed to load recordings:', err);
         }
@@ -226,7 +237,7 @@ window.recordRTCScript.onload = () => {
     };
   }
 
-  // Initialize voice handler only if it doesn't exist
+  // Initialize voice handler
   if (!window.voiceHandler) {
     window.voiceHandler = new window.VoiceHandler();
   }
