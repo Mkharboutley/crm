@@ -1,8 +1,11 @@
+import dynamic from 'next/dynamic';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import WaveSurfer from 'wavesurfer.js';
 import RecordRTC from 'recordrtc';
 import { v4 as uuidv4 } from 'uuid';
+
+// Dynamically import WaveSurfer with no SSR
+const WaveSurfer = dynamic(() => import('wavesurfer.js'), { ssr: false });
 
 interface VoiceMessageProps {
   ticketId: string;
@@ -18,7 +21,7 @@ export default function VoiceMessage({ ticketId, role }: VoiceMessageProps) {
   const recorderRef = useRef<RecordRTC | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const wavesurferRefs = useRef<{ [key: string]: WaveSurfer }>({});
+  const wavesurferRefs = useRef<{ [key: string]: any }>({});
 
   useEffect(() => {
     loadMessages();
@@ -171,6 +174,8 @@ export default function VoiceMessage({ ticketId, role }: VoiceMessageProps) {
   };
 
   const togglePlayback = async (messageId: string, audioData: string) => {
+    if (typeof window === 'undefined') return; // Guard against server-side execution
+
     if (currentAudio === messageId) {
       wavesurferRefs.current[messageId]?.stop();
       setCurrentAudio(null);
@@ -195,7 +200,9 @@ export default function VoiceMessage({ ticketId, role }: VoiceMessageProps) {
         });
 
         wavesurfer.on('finish', () => setCurrentAudio(null));
-        await wavesurfer.loadBlob(await fetch(audioData).then(r => r.blob()));
+        const response = await fetch(audioData);
+        const blob = await response.blob();
+        await wavesurfer.loadBlob(blob);
         wavesurferRefs.current[messageId] = wavesurfer;
       }
 
