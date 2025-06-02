@@ -10,11 +10,15 @@ import {
   Timestamp,
 } from 'firebase/firestore';
 import { firebaseApp } from '@/utils/firebase';
-import QrScanner from 'qr-scanner';
+import dynamic from 'next/dynamic';
 import styles from '@/styles/ScanClose.module.css';
+
+// Dynamically import QrScanner with no SSR
+const QrScanner = dynamic(() => import('qr-scanner'), { ssr: false });
 
 export default function ScanClosePage() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const scannerRef = useRef<any>(null);
   const db = getFirestore(firebaseApp);
 
   const [statusMsg, setStatusMsg] = useState('');
@@ -26,56 +30,70 @@ export default function ScanClosePage() {
   };
 
   useEffect(() => {
-    if (!videoRef.current) return;
+    let mounted = true;
 
-    const scanner = new QrScanner(
-      videoRef.current,
-      async (result) => {
-        const decodedText = result.data;
-        const match = decodedText.match(/\/clients\/(\d+)/);
+    const initializeScanner = async () => {
+      if (!videoRef.current || !mounted) return;
 
-        if (!match) {
-          return updateStatus('❌ رمز غير صالح', 'error');
-        }
+      try {
+        const scanner = new QrScanner(
+          videoRef.current,
+          async (result) => {
+            const decodedText = result.data;
+            const match = decodedText.match(/\/clients\/(\d+)/);
 
-        const ticketNumber = parseInt(match[1]);
+            if (!match) {
+              return updateStatus('❌ رمز غير صالح', 'error');
+            }
 
-        try {
-          const q = query(collection(db, 'tickets'), where('ticket_number', '==', ticketNumber));
-          const snap = await getDocs(q);
+            const ticketNumber = parseInt(match[1]);
 
-          if (snap.empty) {
-            return updateStatus('❌ لم يتم العثور على التذكرة', 'error');
+            try {
+              const q = query(collection(db, 'tickets'), where('ticket_number', '==', ticketNumber));
+              const snap = await getDocs(q);
+
+              if (snap.empty) {
+                return updateStatus('❌ لم يتم العثور على التذكرة', 'error');
+              }
+
+              const ticketDoc = snap.docs[0];
+              await updateDoc(doc(db, 'tickets', ticketDoc.id), {
+                status: 'completed',
+                completedAt: Timestamp.now(),
+              });
+
+              updateStatus('✅ تم تسليم السيارة بنجاح', 'success');
+              scanner.stop();
+            } catch (err) {
+              console.error('Firestore error:', err);
+              updateStatus('⚠️ حدث خطأ أثناء تحديث الحالة', 'error');
+            }
+          },
+          {
+            preferredCamera: 'environment',
+            highlightScanRegion: true,
+            highlightCodeOutline: true,
           }
+        );
 
-          const ticketDoc = snap.docs[0];
-          await updateDoc(doc(db, 'tickets', ticketDoc.id), {
-            status: 'completed',
-            completedAt: Timestamp.now(),
-          });
-
-          updateStatus('✅ تم تسليم السيارة بنجاح', 'success');
-          scanner.stop();
-        } catch (err) {
-          console.error('Firestore error:', err);
-          updateStatus('⚠️ حدث خطأ أثناء تحديث الحالة', 'error');
-        }
-      },
-      {
-        preferredCamera: 'environment',
-        highlightScanRegion: true,
-        highlightCodeOutline: true,
+        scannerRef.current = scanner;
+        await scanner.start();
+      } catch (err) {
+        console.error('Camera error:', err);
+        updateStatus('📵 لا يمكن الوصول إلى الكاميرا', 'error');
       }
-    );
+    };
 
-    scanner.start().catch((err) => {
-      console.error('Camera error:', err);
-      updateStatus('📵 لا يمكن الوصول إلى الكاميرا', 'error');
-    });
+    if (typeof window !== 'undefined') {
+      initializeScanner();
+    }
 
     return () => {
-      scanner.stop();
-      scanner.destroy();
+      mounted = false;
+      if (scannerRef.current) {
+        scannerRef.current.stop();
+        scannerRef.current.destroy();
+      }
     };
   }, [db]);
 

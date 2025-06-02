@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { toast } from 'react-toastify';
 import { v4 as uuidv4 } from 'uuid';
-import RecordRTC from 'recordrtc';
+import dynamic from 'next/dynamic';
 
 interface VoiceMessage {
   id: string;
@@ -15,12 +15,20 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
   const [isRecording, setIsRecording] = useState(false);
   const [messages, setMessages] = useState<VoiceMessage[]>([]);
   const [recordingTime, setRecordingTime] = useState(0);
+  const [RecordRTC, setRecordRTC] = useState<any>(null);
   
-  const recorderRef = useRef<RecordRTC | null>(null);
+  const recorderRef = useRef<any>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<number | null>(null);
 
   useEffect(() => {
+    // Dynamically import RecordRTC only on the client side
+    if (typeof window !== 'undefined') {
+      import('recordrtc').then(module => {
+        setRecordRTC(module.default);
+      });
+    }
+
     loadMessages();
     const interval = setInterval(loadMessages, 2000);
     return () => {
@@ -34,7 +42,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
       streamRef.current.getTracks().forEach(track => track.stop());
     }
     if (timerRef.current) {
-      clearInterval(timerRef.current);
+      window.clearInterval(timerRef.current);
     }
     if (recorderRef.current) {
       recorderRef.current.destroy();
@@ -54,6 +62,11 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
   };
 
   const startRecording = async () => {
+    if (!RecordRTC) {
+      toast.error('Recording functionality not ready');
+      return;
+    }
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
@@ -86,7 +99,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
 
   const startTimer = () => {
     setRecordingTime(0);
-    timerRef.current = setInterval(() => {
+    timerRef.current = window.setInterval(() => {
       setRecordingTime(prev => {
         if (prev >= 60) {
           stopRecording();

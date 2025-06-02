@@ -1,7 +1,6 @@
 import dynamic from 'next/dynamic';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import RecordRTC from 'recordrtc';
 import { v4 as uuidv4 } from 'uuid';
 
 // Dynamically import WaveSurfer with no SSR
@@ -17,13 +16,21 @@ export default function VoiceMessage({ ticketId, role }: VoiceMessageProps) {
   const [recordingTime, setRecordingTime] = useState(0);
   const [messages, setMessages] = useState<any[]>([]);
   const [currentAudio, setCurrentAudio] = useState<string | null>(null);
+  const [RecordRTC, setRecordRTC] = useState<any>(null);
 
-  const recorderRef = useRef<RecordRTC | null>(null);
+  const recorderRef = useRef<any>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<number | null>(null);
   const wavesurferRefs = useRef<{ [key: string]: any }>({});
 
   useEffect(() => {
+    // Dynamically import RecordRTC only on the client side
+    if (typeof window !== 'undefined') {
+      import('recordrtc').then(module => {
+        setRecordRTC(module.default);
+      });
+    }
+
     loadMessages();
     const interval = setInterval(loadMessages, 2000);
     return () => {
@@ -37,7 +44,7 @@ export default function VoiceMessage({ ticketId, role }: VoiceMessageProps) {
       streamRef.current.getTracks().forEach(track => track.stop());
     }
     if (timerRef.current) {
-      clearInterval(timerRef.current);
+      window.clearInterval(timerRef.current);
     }
     Object.values(wavesurferRefs.current).forEach(wavesurfer => {
       wavesurfer.destroy();
@@ -57,6 +64,11 @@ export default function VoiceMessage({ ticketId, role }: VoiceMessageProps) {
   };
 
   const startRecording = async () => {
+    if (!RecordRTC) {
+      toast.error('Recording functionality not ready');
+      return;
+    }
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
@@ -89,7 +101,7 @@ export default function VoiceMessage({ ticketId, role }: VoiceMessageProps) {
 
   const startTimer = () => {
     setRecordingTime(0);
-    timerRef.current = setInterval(() => {
+    timerRef.current = window.setInterval(() => {
       setRecordingTime(prev => {
         if (prev >= 60) {
           stopRecording();
@@ -174,7 +186,7 @@ export default function VoiceMessage({ ticketId, role }: VoiceMessageProps) {
   };
 
   const togglePlayback = async (messageId: string, audioData: string) => {
-    if (typeof window === 'undefined') return; // Guard against server-side execution
+    if (typeof window === 'undefined') return;
 
     if (currentAudio === messageId) {
       wavesurferRefs.current[messageId]?.stop();
