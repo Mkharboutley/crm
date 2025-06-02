@@ -8,6 +8,7 @@
   padding: 20px;
   background: url('/background.gif') no-repeat center center;
   background-size: cover;
+  position: relative;
 }
 
 .wrapper {
@@ -42,4 +43,13 @@
   border-radius: 12px;
   backdrop-filter: blur(5px);
   border: 1px solid rgba(255, 95, 95, 0.2);
+}
+
+.footerLogo {
+  width: 150px;
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0.9;
 }
