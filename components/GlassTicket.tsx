@@ -199,18 +199,59 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
   };
 
   const handleRecordingStop = async () => {
+    // Check if we have any audio data
+    if (chunksRef.current.length === 0) {
+      toast.error('No audio data recorded');
+      return;
+    }
+
     const blob = new Blob(chunksRef.current, { 
       type: MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/ogg'
     });
+
+    // Check if the blob has actual content
+    if (blob.size === 0) {
+      toast.error('Recording is empty');
+      return;
+    }
+
     const audioUrl = URL.createObjectURL(blob);
-    
     const audio = new Audio(audioUrl);
+
+    // Handle audio loading errors
+    audio.onerror = () => {
+      console.error('Error loading audio:', audio.error);
+      toast.error('Error processing audio recording');
+      URL.revokeObjectURL(audioUrl);
+    };
+
     audio.addEventListener('loadedmetadata', () => {
+      // Validate audio duration
+      if (!audio.duration || audio.duration <= 0 || !isFinite(audio.duration)) {
+        toast.error('Invalid audio recording');
+        URL.revokeObjectURL(audioUrl);
+        return;
+      }
+
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64Audio = reader.result as string;
+        // Validate base64 audio data
+        if (!base64Audio || typeof base64Audio !== 'string') {
+          toast.error('Error processing audio data');
+          URL.revokeObjectURL(audioUrl);
+          return;
+        }
         saveMessage(base64Audio, Math.round(audio.duration));
+        URL.revokeObjectURL(audioUrl);
       };
+
+      reader.onerror = () => {
+        console.error('Error reading audio file:', reader.error);
+        toast.error('Error processing audio file');
+        URL.revokeObjectURL(audioUrl);
+      };
+
       reader.readAsDataURL(blob);
     });
   };
