@@ -23,9 +23,11 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+  const syncIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     loadMessages();
+    setupMessageSync();
     return () => cleanup();
   }, [ticketId]);
 
@@ -36,7 +38,30 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
     if (timerRef.current) {
       clearInterval(timerRef.current);
     }
+    if (syncIntervalRef.current) {
+      clearInterval(syncIntervalRef.current);
+    }
     Object.values(wavesurfers).forEach(ws => ws.destroy());
+  };
+
+  const setupMessageSync = () => {
+    if (role === 'admin') {
+      syncIntervalRef.current = setInterval(() => {
+        const sync = localStorage.getItem('adminTicketSync');
+        if (sync) {
+          try {
+            const { ticketId: syncedTicketId } = JSON.parse(sync);
+            if (syncedTicketId === ticketId) {
+              loadMessages();
+              localStorage.removeItem('adminTicketSync');
+              toast.info('New voice message received!');
+            }
+          } catch (err) {
+            console.error('Sync error:', err);
+          }
+        }
+      }, 1000);
+    }
   };
 
   const loadMessages = () => {
@@ -44,10 +69,9 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
       const recordings = JSON.parse(localStorage.getItem('voiceRecordings') || '[]');
       const ticketMessages = recordings
         .filter((r: VoiceMessage) => r.ticketId === ticketId)
-        .slice(-2); // Only show last 2 messages
+        .slice(-2);
       setMessages(ticketMessages);
 
-      // Initialize waveforms after a short delay to ensure DOM elements exist
       setTimeout(() => {
         ticketMessages.forEach(message => {
           initializeWaveform(message);
@@ -125,7 +149,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
       setAudioStream(stream);
 
       const recorder = new MediaRecorder(stream, {
-        mimeType: 'audio/webm;codecs=opus'
+        mimeType: MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/ogg'
       });
       
       setMediaRecorder(recorder);
@@ -138,7 +162,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
       };
       
       recorder.onstop = handleRecordingStop;
-      recorder.start(100); // Collect data in 100ms chunks
+      recorder.start(100);
       
       setIsRecording(true);
       startTimer();
@@ -175,7 +199,9 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
   };
 
   const handleRecordingStop = async () => {
-    const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
+    const blob = new Blob(chunksRef.current, { 
+      type: MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/ogg'
+    });
     const audioUrl = URL.createObjectURL(blob);
     
     const audio = new Audio(audioUrl);
@@ -210,12 +236,13 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
     if (role === 'client') {
       localStorage.setItem('adminTicketSync', JSON.stringify({
         ticketId,
-        timestamp: message.timestamp
+        timestamp: message.timestamp,
+        hasNewMessage: true
       }));
+      toast.success('Voice message sent to admin');
     }
 
     setTimeout(() => initializeWaveform(message), 100);
-    toast.success('Voice message sent');
   };
 
   const formatTime = (seconds: number) => {
