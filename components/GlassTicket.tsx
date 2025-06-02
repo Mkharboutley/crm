@@ -32,12 +32,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string, role
 
   return (
     <div className="glass-ticket" style={{ paddingTop: '25px' }}>
-      <h2 style={{ fontSize: '14px', fontWeight: 'normal', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <img 
-          src="/mic.png" 
-          alt="Microphone" 
-          style={{ width: '24px', height: '24px' }} 
-        />
+      <h2 style={{ fontSize: '14px', fontWeight: 'normal', marginBottom: '15px' }}>
         يمكنكم إرسال رسالة صوتية إلى المسؤول في حالة الطوارئ
       </h2>
       {role === 'client' && (
@@ -66,7 +61,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string, role
       )}
       {role === 'admin' && (
         <div>
-          <h4>👂 سجل الرسائل الصوتية</h4>
+          <h4>سجل الرسائل الصوتية</h4>
           <ul id="recordingsList" className="recordings-list"></ul>
         </div>
       )}
