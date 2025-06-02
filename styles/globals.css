@@ -21,7 +21,7 @@ html, body {
   background: #132540;
 }
 
-/* Animated Urban Background */
+/* Animated QR Background */
 .particles {
   position: fixed;
   top: 0;
@@ -35,51 +35,31 @@ html, body {
   overflow: hidden;
 }
 
-.particles::before {
-  content: '';
-  position: absolute;
-  width: 120vmax;
-  height: 120vmax;
-  background: radial-gradient(circle at center,
-    rgba(255, 255, 255, 0.2) 0%,
-    rgba(255, 255, 255, 0.1) 35%,
-    transparent 60%);
-  border-radius: 50%;
-  top: -40%;
-  left: -20%;
-  animation: floatCircle1 8s linear infinite;
-}
-
+.particles::before,
 .particles::after {
   content: '';
   position: absolute;
-  width: 100vmax;
-  height: 100vmax;
-  background: radial-gradient(circle at center,
-    rgba(255, 255, 255, 0.25) 0%,
-    rgba(255, 255, 255, 0.15) 35%,
-    transparent 60%);
-  border-radius: 50%;
-  bottom: -30%;
-  right: -10%;
-  animation: floatCircle2 6s linear infinite;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, .05) 25%, rgba(255, 255, 255, .05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, .05) 75%, rgba(255, 255, 255, .05) 76%, transparent 77%, transparent),
+    linear-gradient(90deg, transparent 24%, rgba(255, 255, 255, .05) 25%, rgba(255, 255, 255, .05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, .05) 75%, rgba(255, 255, 255, .05) 76%, transparent 77%, transparent);
+  background-size: 50px 50px;
+  animation: qrFloat 3s linear infinite;
 }
 
-@keyframes floatCircle1 {
-  0% {
-    transform: rotate(0deg) translate(4%, 4%) rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg) translate(4%, 4%) rotate(-360deg);
-  }
+.particles::after {
+  background-size: 30px 30px;
+  animation-duration: 2s;
+  opacity: 0.5;
 }
 
-@keyframes floatCircle2 {
+@keyframes qrFloat {
   0% {
-    transform: rotate(0deg) translate(-4%, -4%) rotate(0deg);
+    transform: translate(0, 0) rotate(0deg);
   }
   100% {
-    transform: rotate(-360deg) translate(-4%, -4%) rotate(360deg);
+    transform: translate(-50px, -50px) rotate(1deg);
   }
 }
 
@@ -101,7 +81,7 @@ html, body {
   height: 100vh;
   background: radial-gradient(
     circle at center,
-    transparent 0%,
+    transparent 15%,
     rgba(0, 0, 0, 0.75) 100%
   );
   z-index: 0.5;
