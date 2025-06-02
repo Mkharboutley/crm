@@ -1,5 +1,5 @@
-
 import { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import {
   getFirestore,
   collection,
@@ -23,10 +23,14 @@ import SettingsPanel from '@/components/SettingsPanel';
 import TicketStats from '@/components/TicketStats';
 import Layout from '@/components/Layout';
 import Loader from '@/components/Loader';
-import GlassTicket from '@/components/GlassTicket';
 import styles from '@/styles/dashboard.module.css';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+const GlassTicket = dynamic(() => import('@/components/GlassTicket'), {
+  ssr: false,
+  loading: () => <Loader />
+});
 
 interface Ticket {
   id: string;
@@ -124,6 +128,8 @@ export default function AdminDashboard() {
   }, [db]);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+
     const checkForNewVoice = () => {
       const sync = localStorage.getItem("adminTicketSync");
       if (!sync) return;

@@ -2,6 +2,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
 import {
   getFirestore,
   collection,
@@ -18,7 +19,11 @@ import {
 import { firebaseApp } from '@/utils/firebase';
 import styles from '@/styles/ticketid.module.css';
 import { scheduleLocalNotification } from '@/utils/exporter';
-import GlassTicket from '@/components/GlassTicket';
+
+const GlassTicket = dynamic(() => import('@/components/GlassTicket'), {
+  ssr: false,
+  loading: () => <div>Loading ticket details...</div>
+});
 
 interface Ticket {
   ticket_number: number;
@@ -80,7 +85,7 @@ export default function ClientTicketView() {
   };
 
   useEffect(() => {
-    if (!ticketId || !visitorId) return;
+    if (!ticketId || !visitorId || typeof window === 'undefined') return;
 
     const initializePusher = async () => {
       try {
