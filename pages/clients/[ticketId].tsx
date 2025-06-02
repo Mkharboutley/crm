@@ -198,14 +198,6 @@ export default function ClientTicketView() {
   const mins = Math.floor(countdown / 60000).toString().padStart(2, '0');
   const secs = Math.floor((countdown % 60000) / 1000).toString().padStart(2, '0');
 
-  const hours = time.getHours();
-  const minutes = time.getMinutes();
-  const seconds = time.getSeconds();
-
-  const hourDegrees = (hours % 12) * 30 + minutes * 0.5;
-  const minuteDegrees = minutes * 6 + seconds * 0.1;
-  const secondDegrees = seconds * 6;
-
   if (loading) return <p className={styles.container}>Loading ticket...</p>;
   if (!ticket) return <p className={styles.container}>Ticket not found</p>;
 
@@ -221,13 +213,6 @@ export default function ClientTicketView() {
         <div className={styles.glassCard}>
           <h2 className={styles.title}>معلومات البطاقة</h2>
           
-          <div className={styles.analogClock}>
-            <div className={styles.hourHand} style={{ transform: `rotate(${hourDegrees}deg)` }} />
-            <div className={styles.minuteHand} style={{ transform: `rotate(${minuteDegrees}deg)` }} />
-            <div className={styles.secondHand} style={{ transform: `rotate(${secondDegrees}deg)` }} />
-            <div className={styles.clockCenter} />
-          </div>
-
           <p><strong>رقم البطاقة  : </strong> {ticket.ticket_number}</p>
           <p><strong>رقم اللوحة  : </strong> {ticket.plate_number}</p>
           <p><strong>موديل السيارة  : </strong> {ticket.car_model}</p>
