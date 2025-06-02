@@ -40,15 +40,31 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
       clearInterval(syncIntervalRef.current);
     }
     Object.values(audioRefs.current).forEach(audio => {
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-      }
+      audio?.pause();
+      audio?.currentTime && (audio.currentTime = 0);
     });
   };
 
   const setupMessageSync = () => {
-    syncIntervalRef.current = setInterval(loadMessages, 2000);
+    if (role === 'admin') {
+      syncIntervalRef.current = setInterval(() => {
+        const sync = localStorage.getItem('adminTicketSync');
+        if (sync) {
+          try {
+            const { ticketId: syncedTicketId } = JSON.parse(sync);
+            if (syncedTicketId === ticketId) {
+              loadMessages();
+              localStorage.removeItem('adminTicketSync');
+              toast.info('New voice message received!');
+            }
+          } catch (err) {
+            console.error('Sync error:', err);
+          }
+        }
+      }, 2000);
+    } else {
+      syncIntervalRef.current = setInterval(loadMessages, 2000);
+    }
   };
 
   const loadMessages = () => {
@@ -173,13 +189,14 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
       // Update UI
       setMessages([...ticketMessages, newMessage]);
 
+      // Notify admin of new message
       if (role === 'client') {
         localStorage.setItem('adminTicketSync', JSON.stringify({
           ticketId,
           timestamp: newMessage.timestamp,
           hasNewMessage: true
         }));
-        toast.success('Message sent');
+        toast.success('Message sent to admin');
       }
     };
 
@@ -220,49 +237,59 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
 
   return (
     <div className="glass-ticket">
-      <button
-        onClick={isRecording ? stopRecording : startRecording}
-        className="voice-btn"
-        disabled={isPlaying !== null}
-      >
-        {isRecording ? (
-          <>
-            <span className="recording-dot"></span>
-            Stop Recording ({formatTime(recordingTime)})
-          </>
-        ) : (
-          'Record Message'
-        )}
-      </button>
+      {role === 'client' && (
+        <button
+          onClick={isRecording ? stopRecording : startRecording}
+          className="voice-btn"
+          disabled={isPlaying !== null}
+        >
+          {isRecording ? (
+            <>
+              <span className="recording-dot"></span>
+              Stop Recording ({formatTime(recordingTime)})
+            </>
+          ) : (
+            'Record Message'
+          )}
+        </button>
+      )}
 
       <div className="messages-container">
-        {messages.map((message) => (
-          <div 
-            key={message.id} 
-            className={`message-item ${isPlaying === message.id ? 'playing' : ''}`}
-            onClick={() => handlePlayPause(message.id)}
-          >
-            <div className="message-header">
-              <span className="message-sender">
-                {message.sender === 'client' ? 'Client' : 'Admin'}
-              </span>
-              <span className="message-time">
-                {new Date(message.timestamp).toLocaleString()}
-              </span>
-            </div>
-            <audio
-              ref={el => {
-                if (el) audioRefs.current[message.id] = el;
-              }}
-              src={message.audioData}
-              onEnded={() => setIsPlaying(null)}
-              className="hidden"
-            />
-            <div className="message-status">
-              {isPlaying === message.id ? '⏸ Pause' : '▶ Play'}
-            </div>
+        {messages.length === 0 ? (
+          <div className="message-item">
+            <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.6)' }}>
+              No messages yet
+            </p>
           </div>
-        ))}
+        ) : (
+          messages.map((message) => (
+            <div 
+              key={message.id} 
+              className={`message-item ${isPlaying === message.id ? 'selected' : ''}`}
+              onClick={() => handlePlayPause(message.id)}
+            >
+              <div className="message-header">
+                <span className="message-sender">
+                  {message.sender === 'client' ? 'Client' : 'Admin'}
+                </span>
+                <span className="message-time">
+                  {new Date(message.timestamp).toLocaleString()}
+                </span>
+              </div>
+              <audio
+                ref={el => {
+                  if (el) audioRefs.current[message.id] = el;
+                }}
+                src={message.audioData}
+                onEnded={() => setIsPlaying(null)}
+                className="hidden"
+              />
+              <div className="message-status">
+                {isPlaying === message.id ? '⏸ Pause' : '▶ Play'}
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
