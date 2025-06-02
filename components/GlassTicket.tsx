@@ -42,7 +42,9 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
   const loadMessages = () => {
     try {
       const recordings = JSON.parse(localStorage.getItem('voiceRecordings') || '[]');
-      const ticketMessages = recordings.filter((r: VoiceMessage) => r.ticketId === ticketId);
+      const ticketMessages = recordings
+        .filter((r: VoiceMessage) => r.ticketId === ticketId)
+        .slice(-2); // Only show last 2 messages
       setMessages(ticketMessages);
 
       ticketMessages.forEach(message => {
@@ -96,7 +98,6 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
       wavesurfer.pause();
       setPlayingId(null);
     } else {
-      // Stop any currently playing audio
       if (playingId && wavesurfers[playingId]) {
         wavesurfers[playingId].pause();
       }
@@ -153,7 +154,6 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
     const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
     const audioUrl = URL.createObjectURL(blob);
     
-    // Get audio duration
     const audio = new Audio(audioUrl);
     audio.addEventListener('loadedmetadata', () => {
       const reader = new FileReader();
@@ -176,9 +176,13 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
       duration
     };
 
-    const updatedMessages = [...messages, message];
+    const updatedMessages = [...messages, message].slice(-2); // Keep only last 2 messages
     setMessages(updatedMessages);
-    localStorage.setItem('voiceRecordings', JSON.stringify(updatedMessages));
+    
+    // Update localStorage with all messages
+    const allRecordings = JSON.parse(localStorage.getItem('voiceRecordings') || '[]');
+    const otherRecordings = allRecordings.filter((r: VoiceMessage) => r.ticketId !== ticketId);
+    localStorage.setItem('voiceRecordings', JSON.stringify([...otherRecordings, ...updatedMessages]));
 
     if (role === 'client') {
       localStorage.setItem('adminTicketSync', JSON.stringify({
@@ -199,14 +203,10 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
 
   return (
     <div className="glass-ticket">
-      <h2 className="text-center mb-4 text-white text-lg">
-        🎙️ Voice Messages
-      </h2>
-
       {role === 'client' && (
         <button
           onClick={isRecording ? stopRecording : startRecording}
-          className="voice-btn w-full mb-6"
+          className="voice-btn w-full mb-4"
         >
           {isRecording ? (
             <>
@@ -214,7 +214,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
               Stop Recording ({formatTime(recordingTime)})
             </>
           ) : (
-            'Start Recording'
+            'Record Message'
           )}
         </button>
       )}
