@@ -99,31 +99,35 @@
   background: 
     linear-gradient(
       217deg,
-      rgba(19, 37, 64, 0.98),
-      rgba(19, 37, 64, 0.85) 70.71%
+      #132540 0%,
+      #627899 50%,
+      #132540 100%
     ),
     linear-gradient(
       127deg,
-      rgba(19, 37, 64, 0.92),
-      rgba(19, 37, 64, 0.80) 70.71%
+      rgba(0, 178, 169, 0.3) 0%,
+      rgba(98, 120, 153, 0.5) 50%,
+      rgba(19, 37, 64, 0.8) 100%
     ),
     linear-gradient(
       336deg,
-      rgba(19, 37, 64, 0.95),
-      rgba(19, 37, 64, 0.88) 70.71%
+      rgba(19, 37, 64, 0.9) 0%,
+      rgba(0, 178, 169, 0.2) 50%,
+      rgba(19, 37, 64, 0.9) 100%
     );
+  background-size: 200% 200%, 200% 200%, 200% 200%;
   animation: waveEffect 15s ease-in-out infinite;
 }
 
 @keyframes waveEffect {
   0% {
-    background-position: 0% 50%;
+    background-position: 0% 50%, 0% 50%, 0% 50%;
   }
   50% {
-    background-position: 100% 50%;
+    background-position: 100% 50%, 50% 100%, 100% 0%;
   }
   100% {
-    background-position: 0% 50%;
+    background-position: 0% 50%, 0% 50%, 0% 50%;
   }
 }
 
@@ -133,7 +137,11 @@
 }
 
 .glassCard {
-  background: rgba(255, 255, 255, 0.08);
+  background: linear-gradient(
+    135deg,
+    rgba(19, 37, 64, 0.8) 0%,
+    rgba(98, 120, 153, 0.3) 100%
+  );
   border: 1px solid rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
