@@ -28,8 +28,8 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string, role
 
   return (
     <div className="glass-ticket" style={{ paddingTop: '25px' }}>
-      <h2 style={{ fontSize: '14px', fontWeight: 'normal', marginBottom: '15px' }}>
-         يمكنكم إرسال رسالة صوتية إلى المسؤول في حالة الطوارئ
+      <h2 style={{ fontSize: '14px', fontWeight: 'normal', marginBottom: '15px', textAlign: 'center' }}>
+        🎙️ يمكنكم إرسال رسالة صوتية إلى المسؤول في حالة الطوارئ
       </h2>
       {role === 'client' && (
         <>
