@@ -65,7 +65,8 @@ window.recordRTCScript.onload = () => {
             audio: {
               echoCancellation: true,
               noiseSuppression: true,
-              sampleRate: 44100
+              sampleRate: 44100,
+              channelCount: 1
             }
           });
 
@@ -78,7 +79,7 @@ window.recordRTCScript.onload = () => {
             numberOfAudioChannels: 1,
             timeSlice: 1000,
             ondataavailable: (blob) => {
-              console.log('Recording data available:', blob.size, 'bytes');
+              console.log('✅ Recording data available:', blob.size, 'bytes');
             }
           });
 
