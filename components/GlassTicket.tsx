@@ -165,20 +165,32 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
         sender: role
       };
 
-      const updatedMessages = [...messages, message].slice(-5);
-      setMessages(updatedMessages);
-      
+      // Get existing recordings
       const allRecordings = JSON.parse(localStorage.getItem('voiceRecordings') || '[]');
+      
+      // Filter out old messages for this ticket (keep last 4)
       const otherRecordings = allRecordings.filter((r: VoiceMessage) => r.ticketId !== ticketId);
-      localStorage.setItem('voiceRecordings', JSON.stringify([...otherRecordings, ...updatedMessages]));
+      const ticketRecordings = allRecordings
+        .filter((r: VoiceMessage) => r.ticketId === ticketId)
+        .slice(-4);
+      
+      // Add new message
+      const updatedRecordings = [...otherRecordings, ...ticketRecordings, message];
+      
+      // Update localStorage
+      localStorage.setItem('voiceRecordings', JSON.stringify(updatedRecordings));
+      
+      // Update UI
+      setMessages([...ticketRecordings, message]);
 
+      // Notify admin if sent by client
       if (role === 'client') {
         localStorage.setItem('adminTicketSync', JSON.stringify({
           ticketId,
           timestamp: message.timestamp,
           hasNewMessage: true
         }));
-        toast.success('Voice message sent to admin');
+        toast.success('Voice message sent successfully');
       }
     };
 
@@ -198,21 +210,19 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
 
   return (
     <div className="glass-ticket">
-      {role === 'client' && (
-        <button
-          onClick={isRecording ? stopRecording : startRecording}
-          className="voice-btn w-full mb-4"
-        >
-          {isRecording ? (
-            <>
-              <span className="recording-dot"></span>
-              Stop Recording ({formatTime(recordingTime)})
-            </>
-          ) : (
-            'Record Message'
-          )}
-        </button>
-      )}
+      <button
+        onClick={isRecording ? stopRecording : startRecording}
+        className="voice-btn w-full mb-4"
+      >
+        {isRecording ? (
+          <>
+            <span className="recording-dot"></span>
+            Stop Recording ({formatTime(recordingTime)})
+          </>
+        ) : (
+          'Record Message'
+        )}
+      </button>
 
       <div className="messages-container">
         {messages.map((message) => (
