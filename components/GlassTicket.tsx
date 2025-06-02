@@ -14,46 +14,37 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string, role
     };
     document.body.appendChild(script);
 
-    const handleRecordingClick = () => {
-      setIsRecording(!isRecording);
-    };
-
-    const recordBtn = document.getElementById('recordButton');
-    if (recordBtn) {
-      recordBtn.addEventListener('click', handleRecordingClick);
-    }
-
     return () => {
+      const recordBtn = document.getElementById('record');
       if (recordBtn) {
-        recordBtn.removeEventListener('click', handleRecordingClick);
+        recordBtn.removeEventListener('click', () => setIsRecording(true));
       }
     };
-  }, [ticketId, role, isRecording]);
+  }, [ticketId, role]);
+
+  const handleRecordingClick = () => {
+    setIsRecording(!isRecording);
+  };
 
   return (
     <div className="glass-ticket" style={{ paddingTop: '25px' }}>
       <h2 style={{ fontSize: '14px', fontWeight: 'normal', marginBottom: '15px' }}>
-        يمكنكم إرسال رسالة صوتية إلى المسؤول في حالة الطوارئ
+        🎙️ Voice Messages for Ticket #{ticketId}
       </h2>
       {role === 'client' && (
         <>
-          <button 
-            id="recordButton"
+          <button
+            id={isRecording ? 'stop' : 'record'}
             className="voice-btn"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px'
-            }}
+            onClick={handleRecordingClick}
           >
             {isRecording ? (
               <>
                 <span style={{ color: 'red', marginRight: '8px' }}>●</span>
-                إيقاف التسجيل
+                Stop Recording
               </>
             ) : (
-              'بدء التسجيل'
+              'Start Recording'
             )}
           </button>
           <ul id="recordingsList" className="recordings-list"></ul>
@@ -61,7 +52,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string, role
       )}
       {role === 'admin' && (
         <div>
-          <h4>سجل الرسائل الصوتية</h4>
+          <h4>👂 Voice Messages History</h4>
           <ul id="recordingsList" className="recordings-list"></ul>
         </div>
       )}
