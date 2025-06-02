@@ -78,8 +78,6 @@ export default function Login() {
           {loading ? 'جاري التسجيل...' : 'تسجيل الدخول'}
         </button>
       </form>
-      
-      <img src="/files_714772-1748851574775-players.png" alt="Space Vision" className={styles.footerLogo} />
     </div>
   );
 }
