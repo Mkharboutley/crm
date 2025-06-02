@@ -229,3 +229,41 @@ textarea:focus {
   max-width: 460px;
   margin: 16px auto;
 }
+
+.glass-ticket-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 25px 15px;
+  margin-top: 20px;
+}
+
+.glass-ticket-content {
+  width: 100%;
+  max-width: 460px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.glass-ticket-title {
+  font-size: 12px;
+  font-weight: normal;
+  margin-bottom: 15px;
+  color: white;
+  text-align: center;
+  width: 100%;
+  display: block;
+}
+
+.recordings-list {
+  list-style: none;
+  padding: 0;
+  margin: 15px 0;
+  text-align: center;
+}
