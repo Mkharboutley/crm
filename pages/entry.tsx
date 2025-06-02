@@ -36,16 +36,16 @@ export default function EntryScreen() {
           onClick={() => router.push('/create-qr')}
           className={`${styles.button} rotating-button`}
         >
-          <img src="/b1.png" alt="Create" width="120" height="52" />
-          &nbsp;بطاقة جديدة
+          <span className={styles.buttonIcon}>🎫</span>
+          <span>بطاقة جديدة</span>
         </button>
 
         <button
           onClick={() => router.push('/scan-close')}
           className={`${styles.button} rotating-button`}
         >
-          <img src="/b2.png" alt="Scan" width="120" height="52" />
-          &nbsp;إغلاق بطاقة
+          <span className={styles.buttonIcon}>🔍</span>
+          <span>إغلاق بطاقة</span>
         </button>
       </div>
     </div>

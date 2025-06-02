@@ -1,4 +1,3 @@
-/* styles/entry.module.css */
 @import url("https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,500&display=swap");
 
 .screenWrapper {
@@ -26,11 +25,10 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 0.5rem;
-  background-color: rgba(255, 255, 255, 0.0); /* optional for contrast */
+  gap: 1.5rem;
+  background-color: rgba(255, 255, 255, 0.0);
   padding: 1rem;
   border-radius: 16px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.0);
 }
 
 .logo {
@@ -40,24 +38,17 @@
   display: block;
 }
 
-.button,
-.rotating-button,
-.voice-btn,
-.action-btn {
+.button {
   width: 100%;
   max-width: 460px;
-  height: 56px;
+  height: 40px;
   padding: 0 24px;
   border: none;
-  border-radius: 16px;
-  background: linear-gradient(
-    135deg,
-    rgba(99, 102, 241, 0.2) 0%,
-    rgba(74, 222, 128, 0.2) 100%
-  );
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  box-shadow:
+  box-shadow: 
     0 4px 24px rgba(0, 0, 0, 0.2),
     inset 0 0 0 1px rgba(255, 255, 255, 0.15);
   color: white;
@@ -66,11 +57,26 @@
   letter-spacing: 0.5px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 12px;
   margin: 8px auto;
+}
+
+.button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+.buttonIcon {
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
 }
