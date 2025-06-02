@@ -14,30 +14,43 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string, role
     };
     document.body.appendChild(script);
 
+    const handleRecordingClick = () => {
+      setIsRecording(!isRecording);
+    };
+
+    const recordBtn = document.getElementById('recordButton');
+    if (recordBtn) {
+      recordBtn.addEventListener('click', handleRecordingClick);
+    }
+
     return () => {
-      const recordBtn = document.getElementById('record');
       if (recordBtn) {
-        recordBtn.removeEventListener('click', () => setIsRecording(true));
+        recordBtn.removeEventListener('click', handleRecordingClick);
       }
     };
-  }, [ticketId, role]);
-
-  const handleRecordingClick = () => {
-    setIsRecording(!isRecording);
-  };
+  }, [ticketId, role, isRecording]);
 
   return (
     <div className="glass-ticket" style={{ paddingTop: '25px' }}>
-      <h2 style={{ fontSize: '14px', fontWeight: 'normal', marginBottom: '15px' }}>
-        <img src="/icons/mic.png" alt="Microphone" style={{ width: '20px', height: '20px', marginRight: '8px', verticalAlign: 'middle' }} />
+      <h2 style={{ fontSize: '14px', fontWeight: 'normal', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <img 
+          src="/mic.png" 
+          alt="Microphone" 
+          style={{ width: '24px', height: '24px' }} 
+        />
         يمكنكم إرسال رسالة صوتية إلى المسؤول في حالة الطوارئ
       </h2>
       {role === 'client' && (
         <>
           <button 
-            id={isRecording ? 'stop' : 'record'} 
+            id="recordButton"
             className="voice-btn"
-            onClick={handleRecordingClick}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px'
+            }}
           >
             {isRecording ? (
               <>
