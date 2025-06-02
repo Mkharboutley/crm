@@ -69,7 +69,7 @@ export default function RequestTable({
                 </td>
                 <td>{ticket.etaMinutes ? `${ticket.etaMinutes} min` : '—'}</td>
                 <td>
-                  <div style={{ display: 'flex', gap: 6 }}>
+                  <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
                     <select
                       onChange={(e) => onAssign(ticket.id, e.target.value)}
                       defaultValue=""

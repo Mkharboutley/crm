@@ -141,6 +141,8 @@
   padding: 1.2rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 0.95rem;
+  text-align: center;
+  vertical-align: middle;
 }
 
 .table tr:hover {
@@ -153,26 +155,53 @@
   font-size: 0.85rem;
   font-weight: 500;
   text-transform: uppercase;
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  margin: 0 auto;
   letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.new {
+  background: rgba(76, 175, 80, 0.2);
+  color: #4caf50;
+  border: 1px solid rgba(76, 175, 80, 0.3);
 }
 
 .requested {
-  background: rgba(255, 193, 7, 0.2);
-  color: #ffc107;
-  border: 1px solid rgba(255, 193, 7, 0.3);
+  background: rgba(255, 152, 0, 0.2);
+  color: #ff9800;
+  border: 1px solid rgba(255, 152, 0, 0.3);
+  animation: pulse 2s infinite;
+}
+
+.completed, .cancelled {
+  background: rgba(244, 67, 54, 0.2);
+  color: #f44336;
+  border: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .assigned {
   background: rgba(33, 150, 243, 0.2);
   color: #2196f3;
   border: 1px solid rgba(33, 150, 243, 0.3);
-}
-
-.completed {
-  background: rgba(76, 175, 80, 0.2);
-  color: #4caf50;
-  border: 1px solid rgba(76, 175, 80, 0.3);
 }
 
 .actionBtn {

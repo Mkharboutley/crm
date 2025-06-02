@@ -47,9 +47,12 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
         .slice(-2); // Only show last 2 messages
       setMessages(ticketMessages);
 
-      ticketMessages.forEach(message => {
-        initializeWaveform(message);
-      });
+      // Initialize waveforms after a short delay to ensure DOM elements exist
+      setTimeout(() => {
+        ticketMessages.forEach(message => {
+          initializeWaveform(message);
+        });
+      }, 100);
     } catch (err) {
       console.error('Error loading messages:', err);
       toast.error('Failed to load voice messages');
@@ -68,7 +71,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
       container,
       height: 30,
       waveColor: '#ffffff',
-      progressColor: '#ffffff',
+      progressColor: '#4caf50',
       cursorColor: 'transparent',
       barWidth: 2,
       barGap: 3,
@@ -82,12 +85,15 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
       setPlayingId(null);
     });
 
-    await wavesurfer.load(message.audioData);
-    
-    setWavesurfers(prev => ({
-      ...prev,
-      [message.id]: wavesurfer
-    }));
+    try {
+      await wavesurfer.load(message.audioData);
+      setWavesurfers(prev => ({
+        ...prev,
+        [message.id]: wavesurfer
+      }));
+    } catch (err) {
+      console.error('Error loading audio:', err);
+    }
   };
 
   const togglePlayback = (messageId: string) => {
@@ -108,22 +114,39 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
 
   const startRecording = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        } 
+      });
+      
       setAudioStream(stream);
 
-      const recorder = new MediaRecorder(stream);
+      const recorder = new MediaRecorder(stream, {
+        mimeType: 'audio/webm;codecs=opus'
+      });
+      
       setMediaRecorder(recorder);
-
       chunksRef.current = [];
-      recorder.ondataavailable = (e) => chunksRef.current.push(e.data);
+      
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          chunksRef.current.push(e.data);
+        }
+      };
+      
       recorder.onstop = handleRecordingStop;
-
-      recorder.start();
+      recorder.start(100); // Collect data in 100ms chunks
+      
       setIsRecording(true);
       startTimer();
+      
+      toast.info('Recording started');
     } catch (err) {
       console.error('Error starting recording:', err);
-      toast.error('Failed to start recording');
+      toast.error('Failed to access microphone. Please check permissions.');
     }
   };
 
@@ -147,6 +170,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
       if (timerRef.current) clearInterval(timerRef.current);
       setIsRecording(false);
       setRecordingTime(0);
+      toast.info('Recording stopped');
     }
   };
 
@@ -176,10 +200,9 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
       duration
     };
 
-    const updatedMessages = [...messages, message].slice(-2); // Keep only last 2 messages
+    const updatedMessages = [...messages, message].slice(-2);
     setMessages(updatedMessages);
     
-    // Update localStorage with all messages
     const allRecordings = JSON.parse(localStorage.getItem('voiceRecordings') || '[]');
     const otherRecordings = allRecordings.filter((r: VoiceMessage) => r.ticketId !== ticketId);
     localStorage.setItem('voiceRecordings', JSON.stringify([...otherRecordings, ...updatedMessages]));
@@ -191,7 +214,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
       }));
     }
 
-    initializeWaveform(message);
+    setTimeout(() => initializeWaveform(message), 100);
     toast.success('Voice message sent');
   };
 
