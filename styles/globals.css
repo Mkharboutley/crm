@@ -18,6 +18,7 @@ html, body {
   height: 100vh;
   font-family: 'Almarai', sans-serif;
   overflow: hidden;
+  background: #132030;
 }
 
 /* Animated Particles Background */
@@ -35,12 +36,12 @@ html, body {
     radial-gradient(circle at 85% 44%, rgba(22, 0, 56, 0.728) 1px, transparent 1px),
     radial-gradient(circle at 46% 52%, rgba(255, 20, 255, 0.233) 1px, transparent 1px);
   background-size: 100px 100px;
-  animation: particlesDrift 25s linear infinite;
+  animation: particlesDrift 15s linear infinite;
 }
 
 @keyframes particlesDrift {
-  from { background-position: 0 0; }
-  to { background-position: 100px 100px; }
+  0% { background-position: 0 0; }
+  100% { background-position: 100px 100px; }
 }
 
 .glass-root {
