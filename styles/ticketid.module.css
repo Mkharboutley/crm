@@ -10,8 +10,8 @@
 
 .logo {
   max-width: 270px;
-  margin-bottom: 0.1rem;
-  margin-top: 0.1rem;
+  margin-bottom: 2rem;
+  margin-top: 2rem;
   object-fit: cover;
 }
 
@@ -50,18 +50,19 @@
 
 .detail {
   text-align: left;
-  margin-bottom: 2rem;
-  margin-left: 1.0rem;
-  font-size: 1rem;
+  margin-bottom: 2.5rem;
+  margin-left: 1.5rem;
+  font-size: 1.1rem;
   line-height: 2.8;
   color: rgba(255, 255, 255, 0.9);
 }
 
 .countdown {
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-weight: medium;
   color: #d74040;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
+  margin-top: 1rem;
 }
 
 .rotating-button {
@@ -82,6 +83,8 @@
   font-size: 1.2rem;
   line-height: 1;
   transition: transform 0.2s;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .analogClock {
@@ -140,7 +143,7 @@
 
 @media (max-width: 480px) {
   .card {
-    padding: 1.5rem 1.2rem;
+    padding: 2rem 1.5rem;
   }
 
   .title {
@@ -165,7 +168,7 @@
 .ticketContainer {
   min-height: 130vh;
   width: 100%;
-  padding: 1rem;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -209,7 +212,7 @@
 
 .logo {
   width: 250px;
-  margin: 0.2rem auto;
+  margin: 1rem auto 2rem;
 }
 
 .glassCard {
@@ -222,7 +225,7 @@
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-radius: 28px;
-  padding: 1rem 2rem 3rem;
+  padding: 2.5rem 3rem 4rem;
   color: white;
   text-align: right;
   width: 85%;
@@ -236,6 +239,7 @@
   min-height: 400px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   position: relative;
+  margin-top: 2rem;
 }
 
 .glassCard:hover {
@@ -246,9 +250,9 @@
 }
 
 .ticketLine {
-  margin-bottom: 12px;
-  font-size: 1.05rem;
-  line-height: 1.5;
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+  line-height: 1.8;
   color: rgba(255, 255, 255, 0.9);
-  padding: 1rem 0;
+  padding: 1.2rem 0;
 }
