@@ -14,22 +14,17 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string, role
     };
     document.body.appendChild(script);
 
-    // Monitor recording state
-    const recordBtn = document.getElementById('record');
-    const stopBtn = document.getElementById('stop');
-
-    if (recordBtn && stopBtn) {
-      recordBtn.addEventListener('click', () => setIsRecording(true));
-      stopBtn.addEventListener('click', () => setIsRecording(false));
-    }
-
     return () => {
-      if (recordBtn && stopBtn) {
+      const recordBtn = document.getElementById('record');
+      if (recordBtn) {
         recordBtn.removeEventListener('click', () => setIsRecording(true));
-        stopBtn.removeEventListener('click', () => setIsRecording(false));
       }
     };
   }, [ticketId, role]);
+
+  const handleRecordingClick = () => {
+    setIsRecording(!isRecording);
+  };
 
   return (
     <div className="glass-ticket" style={{ paddingTop: '25px' }}>
@@ -38,17 +33,20 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string, role
       </h2>
       {role === 'client' && (
         <>
-          <button id="record" className="voice-btn">
+          <button 
+            id={isRecording ? 'stop' : 'record'} 
+            className="voice-btn"
+            onClick={handleRecordingClick}
+          >
             {isRecording ? (
               <>
                 <span style={{ color: 'red', marginRight: '8px' }}>●</span>
-                Recording...
+                Stop Recording
               </>
             ) : (
               'Start Recording'
             )}
           </button>
-          <button id="stop" disabled className="voice-btn">Stop</button>
           <ul id="recordingsList" className="recordings-list"></ul>
         </>
       )}
