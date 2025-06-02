@@ -4,7 +4,6 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string, role
   const [isRecording, setIsRecording] = useState(false);
 
   useEffect(() => {
-    // Load voice handler script
     const script = document.createElement('script');
     script.src = '/js/sql-voice-handler.js';
     script.defer = true;
@@ -15,42 +14,31 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string, role
     };
     document.body.appendChild(script);
 
-    // Monitor recording state
-    const recordBtn = document.getElementById('record');
-    const stopBtn = document.getElementById('stop');
+    const handleRecordingClick = () => {
+      setIsRecording(!isRecording);
+    };
 
-    if (recordBtn && stopBtn) {
-      recordBtn.addEventListener('click', () => setIsRecording(true));
-      stopBtn.addEventListener('click', () => setIsRecording(false));
+    const recordBtn = document.getElementById('recordButton');
+    if (recordBtn) {
+      recordBtn.addEventListener('click', handleRecordingClick);
     }
 
     return () => {
-      if (recordBtn && stopBtn) {
-        recordBtn.removeEventListener('click', () => setIsRecording(true));
-        stopBtn.removeEventListener('click', () => setIsRecording(false));
+      if (recordBtn) {
+        recordBtn.removeEventListener('click', handleRecordingClick);
       }
-      script.remove();
     };
-  }, [ticketId, role]);
+  }, [ticketId, role, isRecording]);
 
   return (
-    <div className="glass-ticket">
-      <h2 style={{ 
-        fontSize: '14px', 
-        fontWeight: 'normal', 
-        marginBottom: '15px',
-        textAlign: 'right'
-      }}>
-        {role === 'client' 
-          ? 'يمكنكم إرسال رسالة صوتية إلى المسؤول في حالة الطوارئ'
-          : 'سجل الرسائل الصوتية'
-        }
+    <div className="glass-ticket" style={{ paddingTop: '25px' }}>
+      <h2 style={{ fontSize: '14px', fontWeight: 'normal', marginBottom: '15px' }}>
+        يمكنكم إرسال رسالة صوتية إلى المسؤول في حالة الطوارئ
       </h2>
-      
       {role === 'client' && (
         <>
           <button 
-            id="record" 
+            id="recordButton"
             className="voice-btn"
             style={{
               display: 'flex',
@@ -68,20 +56,14 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string, role
               'بدء التسجيل'
             )}
           </button>
-          <button 
-            id="stop" 
-            disabled={!isRecording}
-            className="voice-btn"
-            style={{ marginTop: '8px' }}
-          >
-            حفظ التسجيل
-          </button>
           <ul id="recordingsList" className="recordings-list"></ul>
         </>
       )}
-
       {role === 'admin' && (
-        <ul id="recordingsList" className="recordings-list"></ul>
+        <div>
+          <h4>سجل الرسائل الصوتية</h4>
+          <ul id="recordingsList" className="recordings-list"></ul>
+        </div>
       )}
     </div>
   );
