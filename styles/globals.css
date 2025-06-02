@@ -18,7 +18,7 @@ html, body {
   height: 100vh;
   font-family: 'Almarai', sans-serif;
   overflow: hidden;
-  background: #0a1520;
+  background: #132540;
 }
 
 /* Animated Particles Background */
@@ -32,9 +32,9 @@ html, body {
   pointer-events: none;
   opacity: 0.8;
   background:
-    radial-gradient(circle at 20% 35%, rgba(0, 140, 255, 0.4) 2px, transparent 2.5px),
-    radial-gradient(circle at 85% 44%, rgba(128, 0, 255, 0.4) 2px, transparent 2.5px),
-    radial-gradient(circle at 46% 52%, rgba(255, 0, 255, 0.4) 2px, transparent 2.5px);
+    radial-gradient(circle at 20% 35%, rgba(80, 180, 255, 0.4) 2px, transparent 2.5px),
+    radial-gradient(circle at 85% 44%, rgba(160, 100, 255, 0.4) 2px, transparent 2.5px),
+    radial-gradient(circle at 46% 52%, rgba(255, 130, 255, 0.4) 2px, transparent 2.5px);
   background-size: 180px 180px;
   animation: particlesDrift 4s linear infinite;
   filter: blur(0.5px);
@@ -75,7 +75,7 @@ html, body {
   background: radial-gradient(
     circle at center,
     transparent 0%,
-    rgba(0, 0, 0, 0.7) 100%
+    rgba(0, 0, 0, 0.5) 100%
   );
   z-index: 0.5;
   pointer-events: none;
