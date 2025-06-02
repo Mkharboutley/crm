@@ -117,36 +117,64 @@
   background: 
     linear-gradient(
       217deg,
-      rgba(2, 4, 8, 0.9) 0%,
-      rgba(19, 37, 64, 0.8) 50%,
-      rgba(2, 4, 8, 0.9) 100%
+      #0a4b94 0%,
+      #0078d4 50%,
+      #0a4b94 100%
     ),
     linear-gradient(
       127deg,
-      rgba(0, 178, 169, 0.1) 0%,
-      rgba(19, 37, 64, 0.2) 50%,
-      rgba(2, 4, 8, 0.3) 100%
+      rgba(0, 178, 169, 0.3) 0%,
+      rgba(0, 120, 212, 0.2) 50%,
+      rgba(10, 75, 148, 0.3) 100%
     ),
     linear-gradient(
       336deg,
-      rgba(2, 4, 8, 0.8) 0%,
-      rgba(0, 178, 169, 0.1) 50%,
-      rgba(2, 4, 8, 0.8) 100%
+      rgba(10, 75, 148, 0.8) 0%,
+      rgba(0, 178, 169, 0.2) 50%,
+      rgba(10, 75, 148, 0.8) 100%
     );
-  background-size: 400% 400%;
+  background-size: 400% 400%, 200% 200%, 300% 300%;
   animation: waveBackground 15s ease infinite;
   position: relative;
 }
 
 @keyframes waveBackground {
   0% {
-    background-position: 0% 50%;
+    background-position: 0% 50%, 0% 0%, 0% 50%;
   }
   50% {
-    background-position: 100% 50%;
+    background-position: 100% 50%, 100% 100%, 100% 50%;
   }
   100% {
-    background-position: 0% 50%;
+    background-position: 0% 50%, 0% 0%, 0% 50%;
+  }
+}
+
+.ticketContainer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 35%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 85% 44%, rgba(0, 120, 212, 0.2) 0%, transparent 50%),
+    radial-gradient(circle at 46% 52%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+  background-size: 200% 200%;
+  animation: waveEffect 15s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes waveEffect {
+  0% {
+    background-position: 0% 50%, 50% 0%, 100% 50%;
+  }
+  50% {
+    background-position: 100% 50%, 0% 100%, 0% 50%;
+  }
+  100% {
+    background-position: 0% 50%, 50% 0%, 100% 50%;
   }
 }
 
@@ -160,7 +188,7 @@
   background: radial-gradient(
     circle at center,
     transparent 0%,
-    rgba(2, 4, 8, 0.4) 100%
+    rgba(10, 75, 148, 0.4) 100%
   );
   pointer-events: none;
 }
@@ -168,8 +196,8 @@
 .glassCard {
   background: linear-gradient(
     135deg,
-    rgba(19, 37, 64, 0.4) 0%,
-    rgba(2, 4, 8, 0.6) 100%
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 100%
   );
   border: 1px solid rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(8px);
