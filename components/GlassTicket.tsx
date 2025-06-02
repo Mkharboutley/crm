@@ -42,23 +42,9 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
   };
 
   const setupMessageSync = () => {
-    if (role === 'admin') {
-      syncIntervalRef.current = setInterval(() => {
-        const sync = localStorage.getItem('adminTicketSync');
-        if (sync) {
-          try {
-            const { ticketId: syncedTicketId } = JSON.parse(sync);
-            if (syncedTicketId === ticketId) {
-              loadMessages();
-              localStorage.removeItem('adminTicketSync');
-              toast.info('New voice message received!');
-            }
-          } catch (err) {
-            console.error('Sync error:', err);
-          }
-        }
-      }, 1000);
-    }
+    syncIntervalRef.current = setInterval(() => {
+      loadMessages();
+    }, 2000);
   };
 
   const loadMessages = () => {
@@ -70,7 +56,6 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
       setMessages(ticketMessages);
     } catch (err) {
       console.error('Error loading messages:', err);
-      toast.error('Failed to load voice messages');
     }
   };
 
@@ -108,7 +93,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
       toast.info('Recording started');
     } catch (err) {
       console.error('Error starting recording:', err);
-      toast.error('Failed to access microphone. Please check permissions.');
+      toast.error('Failed to access microphone');
     }
   };
 
@@ -132,7 +117,6 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
       if (timerRef.current) clearInterval(timerRef.current);
       setIsRecording(false);
       setRecordingTime(0);
-      toast.info('Recording stopped');
     }
   };
 
@@ -255,7 +239,6 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
             key={message.id} 
             className={`message-item ${selectedMessage === message.id ? 'selected' : ''}`}
             onClick={() => handleMessageClick(message.id)}
-            style={{ cursor: 'pointer' }}
           >
             <div className="message-header">
               <span className="message-sender">
