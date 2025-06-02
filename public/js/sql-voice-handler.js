@@ -131,10 +131,17 @@ window.recordRTCScript.onload = () => {
         console.log('Stopping recording...');
 
         return new Promise(resolve => {
-          this.recorder.stopRecording(() => {
+          this.recorder.stopRecording(async () => {
             const blob = this.recorder.getBlob();
             console.log('Recording stopped, blob size:', blob.size);
-            this.saveRecording(blob);
+            
+            // Convert blob to base64
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              const base64Audio = reader.result;
+              this.saveRecording(base64Audio);
+            };
+            reader.readAsDataURL(blob);
             
             if (this.stream) {
               this.stream.getTracks().forEach(track => track.stop());
@@ -155,17 +162,15 @@ window.recordRTCScript.onload = () => {
         });
       }
 
-      saveRecording(blob) {
+      saveRecording(audioData) {
         console.log('Saving recording...');
-        const audioUrl = URL.createObjectURL(blob);
         const ticketId = localStorage.getItem('currentTicketId');
         const timestamp = new Date().toISOString();
         
         const recording = {
           ticketId,
           timestamp,
-          audioUrl,
-          blob
+          audioData
         };
 
         // Load existing recordings
@@ -177,10 +182,7 @@ window.recordRTCScript.onload = () => {
         }
 
         // Add new recording
-        existingRecordings.push({
-          ticketId,
-          timestamp
-        });
+        existingRecordings.push(recording);
 
         // Save updated recordings
         localStorage.setItem('voiceRecordings', JSON.stringify(existingRecordings));
@@ -190,7 +192,8 @@ window.recordRTCScript.onload = () => {
         if (localStorage.getItem('clientRequest')) {
           localStorage.setItem('adminTicketSync', JSON.stringify({
             ticketId,
-            timestamp
+            timestamp,
+            hasAudio: true
           }));
           console.log('Admin notification set for ticket:', ticketId);
         }
@@ -201,7 +204,7 @@ window.recordRTCScript.onload = () => {
       displayRecording(recording) {
         const li = document.createElement('li');
         const audio = document.createElement('audio');
-        audio.src = recording.audioUrl;
+        audio.src = recording.audioData;
         audio.controls = true;
         
         const timestamp = new Date(recording.timestamp).toLocaleString();
@@ -227,11 +230,7 @@ window.recordRTCScript.onload = () => {
           
           this.recordings = savedRecordings.filter(r => r.ticketId === ticketId);
           this.recordings.forEach(r => {
-            this.displayRecording({
-              ...r,
-              audioUrl: null,
-              timestamp: r.timestamp
-            });
+            this.displayRecording(r);
           });
         } catch (err) {
           console.error('Failed to load recordings:', err);
