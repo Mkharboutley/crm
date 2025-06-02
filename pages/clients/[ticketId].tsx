@@ -12,7 +12,8 @@ import {
   updateDoc,
   doc,
   orderBy,
-  getDocs
+  getDocs,
+  serverTimestamp
 } from 'firebase/firestore';
 import { firebaseApp } from '@/utils/firebase';
 import styles from '@/styles/ticketid.module.css';
@@ -40,14 +41,7 @@ export default function ClientTicketView() {
   const [docId, setDocId] = useState('');
   const [loading, setLoading] = useState(true);
   const [countdown, setCountdown] = useState(0);
-  const [time, setTime] = useState(new Date());
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTime(new Date());
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
+  const [requestInProgress, setRequestInProgress] = useState(false);
 
   function generateVisitorId() {
     return 'xxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -161,7 +155,7 @@ export default function ClientTicketView() {
     });
 
     return () => unsub();
-  }, [ticketId, visitorId]);
+  }, [ticketId, visitorId, db]);
 
   useEffect(() => {
     if (countdown <= 0) return;
@@ -172,6 +166,9 @@ export default function ClientTicketView() {
   }, [countdown]);
 
   const handleRequest = async () => {
+    if (requestInProgress) return;
+    
+    setRequestInProgress(true);
     try {
       const now = Timestamp.now();
       const q = query(
@@ -183,15 +180,18 @@ export default function ClientTicketView() {
       const etaMinutes = snap.docs.length < 5 ? 7 : Math.ceil(snap.docs.length / 5) * 7;
 
       await updateDoc(doc(db, 'tickets', docId), {
-        requestedAt: now,
+        requestedAt: serverTimestamp(),
         etaMinutes,
         status: 'requested',
         visitorId: visitorId
       });
+      
       toast.success('✅ تم إرسال طلب السيارة');
     } catch (err) {
       console.error('❌ Failed to request car:', err);
       toast.error('فشل طلب السيارة. حاول مجدداً');
+    } finally {
+      setRequestInProgress(false);
     }
   };
 
@@ -224,8 +224,12 @@ export default function ClientTicketView() {
           ) : ticket.status === 'completed' ? (
             <p style={{ color: 'green', fontWeight: 'bold' }}>✅ تمت عملية التسليم بنجاح</p>
           ) : ticket.status === 'new' ? (
-            <button onClick={handleRequest} className="rotating-button">
-              إطلب سيارتك
+            <button 
+              onClick={handleRequest} 
+              className="rotating-button"
+              disabled={requestInProgress}
+            >
+              {requestInProgress ? 'جاري الطلب...' : 'إطلب سيارتك'}
             </button>
           ) : (
             <p>بإنتظار تعيين سائق ...</p>

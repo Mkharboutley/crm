@@ -17,6 +17,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   const [isPlaying, setIsPlaying] = useState<string | null>(null);
+  const [recordingInProgress, setRecordingInProgress] = useState(false);
   
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -39,7 +40,6 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
     if (syncIntervalRef.current) {
       clearInterval(syncIntervalRef.current);
     }
-    // Stop all playing audio
     Object.values(audioRefs.current).forEach(audio => {
       audio?.pause();
       audio.currentTime = 0;
@@ -47,15 +47,10 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
   };
 
   const setupMessageSync = () => {
-    // Clear any existing interval
     if (syncIntervalRef.current) {
       clearInterval(syncIntervalRef.current);
     }
-
-    // Set up new sync interval
-    syncIntervalRef.current = setInterval(() => {
-      loadMessages();
-    }, 2000);
+    syncIntervalRef.current = setInterval(loadMessages, 2000);
   };
 
   const loadMessages = () => {
@@ -71,6 +66,9 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
   };
 
   const startRecording = async () => {
+    if (recordingInProgress) return;
+    
+    setRecordingInProgress(true);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: {
@@ -105,6 +103,8 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
     } catch (err) {
       console.error('Recording error:', err);
       toast.error('Could not access microphone');
+    } finally {
+      setRecordingInProgress(false);
     }
   };
 
@@ -227,7 +227,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
         <button
           onClick={isRecording ? stopRecording : startRecording}
           className="voice-btn"
-          disabled={isPlaying !== null}
+          disabled={isPlaying !== null || recordingInProgress}
         >
           {isRecording ? (
             <>
@@ -235,7 +235,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
               Stop Recording ({formatTime(recordingTime)})
             </>
           ) : (
-            'Record Message'
+            recordingInProgress ? 'Starting...' : 'Record Message'
           )}
         </button>
       )}
