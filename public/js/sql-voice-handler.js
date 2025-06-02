@@ -15,11 +15,11 @@ window.recordRTCScript.onload = () => {
         this.stream = null;
         this.recordings = [];
         this.isRecording = false;
+        console.log('VoiceHandler initialized');
         this.initialize();
       }
 
       initialize() {
-        // Check browser support first
         if (!this.checkBrowserSupport()) {
           console.warn('Browser does not support required features');
           return;
@@ -39,7 +39,6 @@ window.recordRTCScript.onload = () => {
       }
 
       checkBrowserSupport() {
-        // Check for required APIs
         const hasMediaDevices = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
         const hasAudioContext = !!(window.AudioContext || window.webkitAudioContext);
         
@@ -57,7 +56,7 @@ window.recordRTCScript.onload = () => {
       async requestPermissions() {
         try {
           const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-          stream.getTracks().forEach(track => track.stop()); // Stop immediately, we just wanted permission
+          stream.getTracks().forEach(track => track.stop());
           return true;
         } catch (err) {
           console.error('Permission error:', err);
@@ -67,6 +66,7 @@ window.recordRTCScript.onload = () => {
 
       async startRecording() {
         try {
+          console.log('Starting recording...');
           if (!this.checkBrowserSupport()) {
             throw new Error('Recording not supported in this browser');
           }
@@ -94,12 +94,13 @@ window.recordRTCScript.onload = () => {
             numberOfAudioChannels: 1,
             timeSlice: 1000,
             ondataavailable: (blob) => {
-              // Optional: Handle streaming audio data
+              console.log('Recording data available:', blob.size, 'bytes');
             }
           });
           
           this.recorder.startRecording();
           this.isRecording = true;
+          console.log('Recording started successfully');
           
           const recordBtn = document.getElementById('record');
           const stopBtn = document.getElementById('stop');
@@ -111,13 +112,11 @@ window.recordRTCScript.onload = () => {
           console.error('Recording failed:', err);
           alert(err.message || 'Could not start recording. Please check permissions and try again.');
           
-          // Reset UI state
           const recordBtn = document.getElementById('record');
           const stopBtn = document.getElementById('stop');
           if (recordBtn) recordBtn.disabled = false;
           if (stopBtn) stopBtn.disabled = true;
           
-          // Cleanup any partial setup
           if (this.stream) {
             this.stream.getTracks().forEach(track => track.stop());
             this.stream = null;
@@ -129,10 +128,12 @@ window.recordRTCScript.onload = () => {
 
       stopRecording() {
         if (!this.recorder || !this.isRecording) return;
+        console.log('Stopping recording...');
 
         return new Promise(resolve => {
           this.recorder.stopRecording(() => {
             const blob = this.recorder.getBlob();
+            console.log('Recording stopped, blob size:', blob.size);
             this.saveRecording(blob);
             
             if (this.stream) {
@@ -155,6 +156,7 @@ window.recordRTCScript.onload = () => {
       }
 
       saveRecording(blob) {
+        console.log('Saving recording...');
         const audioUrl = URL.createObjectURL(blob);
         const ticketId = localStorage.getItem('currentTicketId');
         const timestamp = new Date().toISOString();
@@ -166,7 +168,7 @@ window.recordRTCScript.onload = () => {
           blob
         };
 
-        // Load existing recordings first
+        // Load existing recordings
         let existingRecordings = [];
         try {
           existingRecordings = JSON.parse(localStorage.getItem('voiceRecordings') || '[]');
@@ -177,19 +179,20 @@ window.recordRTCScript.onload = () => {
         // Add new recording
         existingRecordings.push({
           ticketId,
-          timestamp,
-          // Don't store blob and audioUrl in localStorage
+          timestamp
         });
 
         // Save updated recordings
         localStorage.setItem('voiceRecordings', JSON.stringify(existingRecordings));
+        console.log('Recording saved to localStorage');
 
-        // Notify admin about new recording
+        // Notify admin
         if (localStorage.getItem('clientRequest')) {
           localStorage.setItem('adminTicketSync', JSON.stringify({
             ticketId,
             timestamp
           }));
+          console.log('Admin notification set for ticket:', ticketId);
         }
 
         this.displayRecording(recording);
@@ -212,6 +215,7 @@ window.recordRTCScript.onload = () => {
         const recordingsList = document.getElementById('recordingsList');
         if (recordingsList) {
           recordingsList.insertBefore(li, recordingsList.firstChild);
+          console.log('Recording displayed in UI');
         }
       }
 
@@ -219,10 +223,10 @@ window.recordRTCScript.onload = () => {
         try {
           const savedRecordings = JSON.parse(localStorage.getItem('voiceRecordings') || '[]');
           const ticketId = localStorage.getItem('currentTicketId');
+          console.log('Loading recordings for ticket:', ticketId);
           
           this.recordings = savedRecordings.filter(r => r.ticketId === ticketId);
           this.recordings.forEach(r => {
-            // We don't store blobs in localStorage, so we just show timestamps
             this.displayRecording({
               ...r,
               audioUrl: null,
@@ -239,5 +243,6 @@ window.recordRTCScript.onload = () => {
   // Initialize voice handler only if it doesn't exist
   if (!window.voiceHandler) {
     window.voiceHandler = new window.VoiceHandler();
+    console.log('Voice handler instance created');
   }
 };
