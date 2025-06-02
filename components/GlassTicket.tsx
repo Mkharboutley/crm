@@ -39,6 +39,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
     if (syncIntervalRef.current) {
       clearInterval(syncIntervalRef.current);
     }
+    // Stop all playing audio
     Object.values(audioRefs.current).forEach(audio => {
       audio?.pause();
       audio.currentTime = 0;
@@ -46,32 +47,21 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
   };
 
   const setupMessageSync = () => {
-    if (role === 'admin') {
-      syncIntervalRef.current = setInterval(() => {
-        const sync = localStorage.getItem('adminTicketSync');
-        if (sync) {
-          try {
-            const { ticketId: syncedTicketId } = JSON.parse(sync);
-            if (syncedTicketId === ticketId) {
-              loadMessages();
-              localStorage.removeItem('adminTicketSync');
-              toast.info('New voice message received!');
-            }
-          } catch (err) {
-            console.error('Sync error:', err);
-          }
-        }
-      }, 2000);
-    } else {
-      // For clients, periodically check for new messages
-      syncIntervalRef.current = setInterval(loadMessages, 2000);
+    // Clear any existing interval
+    if (syncIntervalRef.current) {
+      clearInterval(syncIntervalRef.current);
     }
+
+    // Set up new sync interval
+    syncIntervalRef.current = setInterval(() => {
+      loadMessages();
+    }, 2000);
   };
 
   const loadMessages = () => {
     try {
-      const recordings = JSON.parse(localStorage.getItem('voiceRecordings') || '[]');
-      const ticketMessages = recordings
+      const allRecordings = JSON.parse(localStorage.getItem('voiceRecordings') || '[]');
+      const ticketMessages = allRecordings
         .filter((r: VoiceMessage) => r.ticketId === ticketId)
         .slice(-5);
       setMessages(ticketMessages);
