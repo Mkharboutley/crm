@@ -30,40 +30,53 @@ html, body {
   height: 100%;
   z-index: 0;
   pointer-events: none;
-  opacity: 1;
   background: 
-    linear-gradient(217deg, rgba(19, 37, 64, 0.9), rgba(0, 91, 150, 0.7) 70.71%),
-    linear-gradient(127deg, rgba(0, 91, 150, 0.8), rgba(19, 37, 64, 0.7) 70.71%),
-    linear-gradient(336deg, rgba(19, 37, 64, 0.9), rgba(0, 91, 150, 0.8) 70.71%),
-    url('https://images.pexels.com/photos/466685/pexels-photo-466685.jpeg?auto=compress&cs=tinysrgb&w=1920');
-  background-size: 200% 200%;
-  background-position: center;
-  animation: urbanMove 20s ease-in-out infinite;
+    radial-gradient(circle at 20% 35%, rgba(0, 91, 150, 0.4) 0%, transparent 50%),
+    radial-gradient(circle at 75% 44%, rgba(19, 37, 64, 0.4) 0%, transparent 50%),
+    radial-gradient(circle at 46% 52%, rgba(0, 91, 150, 0.4) 0%, transparent 50%),
+    url('https://images.pexels.com/photos/325185/pexels-photo-325185.jpeg?auto=compress&cs=tinysrgb&w=1920');
+  background-size: 400% 400%, 400% 400%, 400% 400%, cover;
+  background-position: 0% 0%;
+  animation: 
+    gradientPosition 20s ease infinite,
+    backgroundScale 15s ease-in-out infinite;
   filter: contrast(120%) brightness(70%);
-  transform-origin: center;
-  will-change: transform, filter, background-position;
+  mix-blend-mode: overlay;
+  opacity: 0.9;
 }
 
-@keyframes urbanMove {
+@keyframes gradientPosition {
   0% {
-    background-position: 0% 0%;
+    background-position: 0% 0%, 100% 0%, 50% 50%;
     filter: contrast(120%) brightness(70%);
   }
   25% {
-    background-position: 50% 0%;
+    background-position: 100% 0%, 50% 100%, 0% 50%;
     filter: contrast(130%) brightness(65%);
   }
   50% {
-    background-position: 100% 50%;
+    background-position: 50% 100%, 0% 50%, 100% 0%;
     filter: contrast(125%) brightness(60%);
   }
   75% {
-    background-position: 50% 100%;
+    background-position: 0% 50%, 100% 0%, 50% 100%;
     filter: contrast(130%) brightness(65%);
   }
   100% {
-    background-position: 0% 0%;
+    background-position: 0% 0%, 100% 0%, 50% 50%;
     filter: contrast(120%) brightness(70%);
+  }
+}
+
+@keyframes backgroundScale {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
   }
 }
 
@@ -72,9 +85,9 @@ html, body {
   z-index: 1;
   min-height: 100vh;
   width: 100%;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  background: rgba(19, 37, 64, 0.05);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background: rgba(19, 37, 64, 0.1);
 }
 
 .gradient-overlay {
@@ -85,38 +98,24 @@ html, body {
   height: 100vh;
   background: radial-gradient(
     circle at center,
-    rgba(0, 91, 150, 0.1) 0%,
-    rgba(19, 37, 64, 0.85) 100%
+    transparent 0%,
+    rgba(19, 37, 64, 0.8) 100%
   );
+  mix-blend-mode: multiply;
   z-index: 0.5;
   pointer-events: none;
-  animation: pulseOverlay 15s ease-in-out infinite;
+  animation: overlayPulse 10s ease-in-out infinite;
 }
 
-@keyframes pulseOverlay {
+@keyframes overlayPulse {
   0% {
-    opacity: 0.9;
-    background: radial-gradient(
-      circle at center,
-      rgba(0, 91, 150, 0.1) 10%,
-      rgba(19, 37, 64, 0.85) 100%
-    );
+    opacity: 0.7;
   }
   50% {
-    opacity: 0.95;
-    background: radial-gradient(
-      circle at center,
-      rgba(0, 91, 150, 0.15) 15%,
-      rgba(19, 37, 64, 0.9) 100%
-    );
+    opacity: 0.9;
   }
   100% {
-    opacity: 0.9;
-    background: radial-gradient(
-      circle at center,
-      rgba(0, 91, 150, 0.1) 10%,
-      rgba(19, 37, 64, 0.85) 100%
-    );
+    opacity: 0.7;
   }
 }
 
