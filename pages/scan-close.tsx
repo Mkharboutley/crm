@@ -13,8 +13,8 @@ import { firebaseApp } from '@/utils/firebase';
 import dynamic from 'next/dynamic';
 import styles from '@/styles/ScanClose.module.css';
 
-// Dynamically import QrScanner with no SSR
-const QrScanner = dynamic(() => import('qr-scanner'), { ssr: false });
+// Dynamically import QrScanner with no SSR, explicitly accessing default export
+const QrScanner = dynamic(() => import('qr-scanner').then(mod => mod.default), { ssr: false });
 
 export default function ScanClosePage() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
