@@ -17,7 +17,7 @@
     "react-toastify": "^10.0.4",
     "recordrtc": "^5.6.2",
     "uuid": "^9.0.1",
-    "vite": "^5.1.6"
+    "vite": "^6.3.5"
   },
   "devDependencies": {
     "@types/recordrtc": "^5.6.14",
