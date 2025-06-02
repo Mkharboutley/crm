@@ -15,6 +15,7 @@ window.recordRTCScript.onload = () => {
         this.stream = null;
         this.recordings = [];
         this.isRecording = false;
+        this.recordingTimeout = null;
         console.log('VoiceHandler initialized');
         this.initialize();
       }
@@ -108,6 +109,12 @@ window.recordRTCScript.onload = () => {
           if (recordBtn) recordBtn.disabled = true;
           if (stopBtn) stopBtn.disabled = false;
 
+          // Set 1-minute timeout
+          this.recordingTimeout = setTimeout(() => {
+            console.log('Recording reached 1-minute limit');
+            this.stopRecording();
+          }, 60000);
+
         } catch (err) {
           console.error('Recording failed:', err);
           alert(err.message || 'Could not start recording. Please check permissions and try again.');
@@ -129,6 +136,12 @@ window.recordRTCScript.onload = () => {
       stopRecording() {
         if (!this.recorder || !this.isRecording) return;
         console.log('Stopping recording...');
+
+        // Clear the timeout if stopping manually
+        if (this.recordingTimeout) {
+          clearTimeout(this.recordingTimeout);
+          this.recordingTimeout = null;
+        }
 
         return new Promise(resolve => {
           this.recorder.stopRecording(async () => {
