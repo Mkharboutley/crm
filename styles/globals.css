@@ -92,7 +92,7 @@ button,
   height: 36px;
   padding: 0 18px;
   border: none;
-  border-radius: 16px;
+  border-radius: 12px;
   background: linear-gradient(
     135deg,
     rgba(99, 102, 241, 0.2) 0%,
@@ -163,7 +163,7 @@ textarea {
   width: 100%;
   height: 56px;
   padding: 0 24px;
-  border-radius: 16px;
+  border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
@@ -198,7 +198,7 @@ textarea::placeholder {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border-radius: 16px;
+  border-radius: 12px;
   padding: 32px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 
@@ -217,7 +217,7 @@ textarea::placeholder {
 
 /* Voice Message Components */
 .voice-btn {
-  border-radius: 16px;
+  border-radius: 12px;
   background: linear-gradient(
     135deg,
     rgba(99, 102, 241, 0.2) 0%,
@@ -279,7 +279,7 @@ textarea::placeholder {
 
 .message-item {
   background: rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
+  border-radius: 12px;
   padding: 16px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
@@ -316,7 +316,7 @@ textarea::placeholder {
   width: 100%;
   height: 56px;
   background: #0095ff;
-  border-radius: 16px;
+  border-radius: 12px;
   padding: 0 20px;
   display: flex;
   align-items: center;
