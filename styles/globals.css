@@ -30,27 +30,27 @@ html, body {
   height: 100%;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.8;
+  opacity: 0.9;
   background:
-    radial-gradient(circle at 20% 35%, rgba(0, 140, 255, 0.4) 2px, transparent 2.5px),
-    radial-gradient(circle at 85% 44%, rgba(128, 0, 255, 0.4) 2px, transparent 2.5px),
-    radial-gradient(circle at 46% 52%, rgba(255, 0, 255, 0.4) 2px, transparent 2.5px);
-  background-size: 180px 180px;
-  animation: particlesDrift 8s linear infinite;
+    radial-gradient(circle at 20% 35%, rgba(0, 140, 255, 0.5) 2px, transparent 2.5px),
+    radial-gradient(circle at 85% 44%, rgba(128, 0, 255, 0.5) 2px, transparent 2.5px),
+    radial-gradient(circle at 46% 52%, rgba(255, 0, 255, 0.5) 2px, transparent 2.5px);
+  background-size: 160px 160px;
+  animation: particlesDrift 5s linear infinite;
   filter: blur(0.5px);
 }
 
 @keyframes particlesDrift {
   0% { 
     background-position: 0 0;
-    opacity: 0.8;
+    opacity: 0.9;
   }
   50% {
-    opacity: 0.6;
+    opacity: 0.7;
   }
   100% { 
-    background-position: 180px 180px;
-    opacity: 0.8;
+    background-position: 160px 160px;
+    opacity: 0.9;
   }
 }
 
