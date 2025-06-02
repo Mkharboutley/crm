@@ -30,27 +30,43 @@ html, body {
   height: 100%;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.8;
+  opacity: 1;
   background: 
-    linear-gradient(45deg, rgba(0, 0, 0, 0.7), rgba(20, 20, 20, 0.7)),
-    url('https://images.pexels.com/photos/466685/pexels-photo-466685.jpeg?auto=compress&cs=tinysrgb&w=1920');
-  background-size: cover;
-  animation: urbanMove 30s linear infinite;
-  filter: contrast(120%) brightness(70%);
+    linear-gradient(45deg, rgba(0, 0, 0, 0.6), rgba(20, 20, 20, 0.6)),
+    url('https://images.pexels.com/photos/1123972/pexels-photo-1123972.jpeg?auto=compress&cs=tinysrgb&w=1920');
+  background-size: 120% 120%;
+  background-position: center;
+  animation: urbanMove 20s ease-in-out infinite;
+  filter: contrast(130%) brightness(65%);
+  transform-origin: center;
+  will-change: transform, filter, background-position;
 }
 
 @keyframes urbanMove {
   0% {
     background-position: 0% 0%;
-    filter: contrast(120%) brightness(70%);
+    filter: contrast(130%) brightness(65%);
+    transform: scale(1.05);
+  }
+  25% {
+    background-position: 5% 5%;
+    filter: contrast(140%) brightness(60%);
+    transform: scale(1.1);
   }
   50% {
-    background-position: 10% 5%;
+    background-position: 0% 10%;
+    filter: contrast(150%) brightness(55%);
+    transform: scale(1.05);
+  }
+  75% {
+    background-position: -5% 5%;
     filter: contrast(140%) brightness(60%);
+    transform: scale(1.1);
   }
   100% {
     background-position: 0% 0%;
-    filter: contrast(120%) brightness(70%);
+    filter: contrast(130%) brightness(65%);
+    transform: scale(1.05);
   }
 }
 
@@ -73,7 +89,7 @@ html, body {
   background: radial-gradient(
     circle at center,
     transparent 0%,
-    rgba(0, 0, 0, 0.7) 100%
+    rgba(0, 0, 0, 0.8) 100%
   );
   z-index: 0.5;
   pointer-events: none;
@@ -82,13 +98,28 @@ html, body {
 
 @keyframes pulseOverlay {
   0% {
-    opacity: 0.7;
+    opacity: 0.8;
+    background: radial-gradient(
+      circle at center,
+      transparent 0%,
+      rgba(0, 0, 0, 0.8) 100%
+    );
   }
   50% {
     opacity: 0.9;
+    background: radial-gradient(
+      circle at center,
+      transparent 10%,
+      rgba(0, 0, 0, 0.9) 100%
+    );
   }
   100% {
-    opacity: 0.7;
+    opacity: 0.8;
+    background: radial-gradient(
+      circle at center,
+      transparent 0%,
+      rgba(0, 0, 0, 0.8) 100%
+    );
   }
 }
 
