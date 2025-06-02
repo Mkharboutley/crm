@@ -16,12 +16,12 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
   const [recordingTime, setRecordingTime] = useState(0);
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
-  const [selectedMessage, setSelectedMessage] = useState<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState<string | null>(null);
   
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const syncIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const audioRefs = useRef<{ [key: string]: HTMLAudioElement | null }>({});
+  const audioRefs = useRef<{ [key: string]: HTMLAudioElement }>({});
 
   useEffect(() => {
     loadMessages();
@@ -39,12 +39,16 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
     if (syncIntervalRef.current) {
       clearInterval(syncIntervalRef.current);
     }
+    Object.values(audioRefs.current).forEach(audio => {
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    });
   };
 
   const setupMessageSync = () => {
-    syncIntervalRef.current = setInterval(() => {
-      loadMessages();
-    }, 2000);
+    syncIntervalRef.current = setInterval(loadMessages, 2000);
   };
 
   const loadMessages = () => {
@@ -92,8 +96,8 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
       
       toast.info('Recording started');
     } catch (err) {
-      console.error('Error starting recording:', err);
-      toast.error('Failed to access microphone');
+      console.error('Recording error:', err);
+      toast.error('Could not access microphone');
     }
   };
 
@@ -122,7 +126,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
 
   const handleRecordingStop = async () => {
     if (chunksRef.current.length === 0) {
-      toast.error('No audio data recorded');
+      toast.error('No audio recorded');
       return;
     }
 
@@ -143,7 +147,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
         return;
       }
 
-      const message: VoiceMessage = {
+      const newMessage: VoiceMessage = {
         id: uuidv4(),
         ticketId,
         timestamp: new Date().toISOString(),
@@ -154,38 +158,58 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
       // Get existing recordings
       const allRecordings = JSON.parse(localStorage.getItem('voiceRecordings') || '[]');
       
-      // Filter out old messages for this ticket (keep last 4)
+      // Keep only the last 4 messages for this ticket
       const otherRecordings = allRecordings.filter((r: VoiceMessage) => r.ticketId !== ticketId);
-      const ticketRecordings = allRecordings
+      const ticketMessages = allRecordings
         .filter((r: VoiceMessage) => r.ticketId === ticketId)
         .slice(-4);
       
       // Add new message
-      const updatedRecordings = [...otherRecordings, ...ticketRecordings, message];
+      const updatedRecordings = [...otherRecordings, ...ticketMessages, newMessage];
       
-      // Update localStorage
+      // Save to localStorage
       localStorage.setItem('voiceRecordings', JSON.stringify(updatedRecordings));
       
       // Update UI
-      setMessages([...ticketRecordings, message]);
+      setMessages([...ticketMessages, newMessage]);
 
-      // Notify admin if sent by client
       if (role === 'client') {
         localStorage.setItem('adminTicketSync', JSON.stringify({
           ticketId,
-          timestamp: message.timestamp,
+          timestamp: newMessage.timestamp,
           hasNewMessage: true
         }));
-        toast.success('Voice message sent successfully');
+        toast.success('Message sent');
       }
     };
 
-    reader.onerror = () => {
-      console.error('Error reading audio file:', reader.error);
-      toast.error('Failed to process audio file');
-    };
-
     reader.readAsDataURL(blob);
+  };
+
+  const handlePlayPause = (messageId: string) => {
+    const audio = audioRefs.current[messageId];
+    if (!audio) return;
+
+    // Stop all other playing audio
+    Object.entries(audioRefs.current).forEach(([id, audioEl]) => {
+      if (id !== messageId && audioEl) {
+        audioEl.pause();
+        audioEl.currentTime = 0;
+      }
+    });
+
+    if (isPlaying === messageId) {
+      audio.pause();
+      audio.currentTime = 0;
+      setIsPlaying(null);
+    } else {
+      audio.play()
+        .then(() => setIsPlaying(messageId))
+        .catch(err => {
+          console.error('Playback error:', err);
+          toast.error('Could not play audio');
+        });
+    }
   };
 
   const formatTime = (seconds: number) => {
@@ -194,34 +218,12 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const handleMessageClick = (messageId: string) => {
-    setSelectedMessage(messageId === selectedMessage ? null : messageId);
-    const audio = audioRefs.current[messageId];
-    if (audio) {
-      if (messageId === selectedMessage) {
-        audio.pause();
-        audio.currentTime = 0;
-      } else {
-        // Stop all other playing audio
-        Object.values(audioRefs.current).forEach(a => {
-          if (a && a !== audio) {
-            a.pause();
-            a.currentTime = 0;
-          }
-        });
-        audio.play().catch(err => {
-          console.error('Error playing audio:', err);
-          toast.error('Failed to play audio message');
-        });
-      }
-    }
-  };
-
   return (
     <div className="glass-ticket">
       <button
         onClick={isRecording ? stopRecording : startRecording}
-        className="voice-btn w-full mb-4"
+        className="voice-btn"
+        disabled={isPlaying !== null}
       >
         {isRecording ? (
           <>
@@ -237,8 +239,8 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
         {messages.map((message) => (
           <div 
             key={message.id} 
-            className={`message-item ${selectedMessage === message.id ? 'selected' : ''}`}
-            onClick={() => handleMessageClick(message.id)}
+            className={`message-item ${isPlaying === message.id ? 'playing' : ''}`}
+            onClick={() => handlePlayPause(message.id)}
           >
             <div className="message-header">
               <span className="message-sender">
@@ -248,13 +250,16 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
                 {new Date(message.timestamp).toLocaleString()}
               </span>
             </div>
-            <audio 
-              ref={el => audioRefs.current[message.id] = el}
-              src={message.audioData} 
+            <audio
+              ref={el => {
+                if (el) audioRefs.current[message.id] = el;
+              }}
+              src={message.audioData}
+              onEnded={() => setIsPlaying(null)}
               className="hidden"
             />
             <div className="message-status">
-              {selectedMessage === message.id ? '⏸ Pause' : '▶ Play'}
+              {isPlaying === message.id ? '⏸ Pause' : '▶ Play'}
             </div>
           </div>
         ))}
