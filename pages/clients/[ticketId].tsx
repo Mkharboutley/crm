@@ -219,6 +219,8 @@ export default function ClientTicketView() {
         <img src="/logo.png" alt="i-Valet" className={styles.logo} />
 
         <div className={styles.glassCard}>
+          <h2 className={styles.title}>معلومات البطاقة</h2>
+          
           <div className={styles.analogClock}>
             <div className={styles.hourHand} style={{ transform: `rotate(${hourDegrees}deg)` }} />
             <div className={styles.minuteHand} style={{ transform: `rotate(${minuteDegrees}deg)` }} />
@@ -226,7 +228,6 @@ export default function ClientTicketView() {
             <div className={styles.clockCenter} />
           </div>
 
-          <h2 className={styles.title}>معلومات البطاقة</h2>
           <p><strong>رقم البطاقة  : </strong> {ticket.ticket_number}</p>
           <p><strong>رقم اللوحة  : </strong> {ticket.plate_number}</p>
           <p><strong>موديل السيارة  : </strong> {ticket.car_model}</p>
