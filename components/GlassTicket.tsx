@@ -91,7 +91,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string, role
             >
               {isRecording ? (
                 <>
-                  <span className="recording-dot">●</span>
+                  <span className="recording-dot"></span>
                   Stop Recording
                 </>
               ) : (
