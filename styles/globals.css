@@ -18,7 +18,7 @@ html, body {
   height: 100vh;
   font-family: 'Almarai', sans-serif;
   overflow: hidden;
-  background: #132030;
+  background: #0a1520;
 }
 
 /* Animated Particles Background */
@@ -30,18 +30,28 @@ html, body {
   height: 100%;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.5;
+  opacity: 0.8;
   background:
-    radial-gradient(circle at 20% 35%, rgba(0, 113, 252, 0.237) 1px, transparent 1px),
-    radial-gradient(circle at 85% 44%, rgba(22, 0, 56, 0.728) 1px, transparent 1px),
-    radial-gradient(circle at 46% 52%, rgba(255, 20, 255, 0.233) 1px, transparent 1px);
-  background-size: 100px 100px;
-  animation: particlesDrift 15s linear infinite;
+    radial-gradient(circle at 20% 35%, rgba(0, 140, 255, 0.4) 2px, transparent 2.5px),
+    radial-gradient(circle at 85% 44%, rgba(128, 0, 255, 0.4) 2px, transparent 2.5px),
+    radial-gradient(circle at 46% 52%, rgba(255, 0, 255, 0.4) 2px, transparent 2.5px);
+  background-size: 180px 180px;
+  animation: particlesDrift 8s linear infinite;
+  filter: blur(0.5px);
 }
 
 @keyframes particlesDrift {
-  0% { background-position: 0 0; }
-  100% { background-position: 100px 100px; }
+  0% { 
+    background-position: 0 0;
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% { 
+    background-position: 180px 180px;
+    opacity: 0.8;
+  }
 }
 
 .glass-root {
@@ -63,7 +73,7 @@ html, body {
   background: radial-gradient(
     circle at center,
     transparent 0%,
-    rgba(0, 0, 0, 0.5) 100%
+    rgba(0, 0, 0, 0.7) 100%
   );
   z-index: 0.5;
   pointer-events: none;
