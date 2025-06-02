@@ -1,6 +1,3 @@
-/* ============================
-   General Reset & Typography
-============================ */
 * {
   box-sizing: border-box;
   font-family: 'Almarai', sans-serif !important;
@@ -8,9 +5,6 @@
   padding: 0;
 }
 
-/* ============================
-   Full Viewport Setup
-============================ */
 html, body {
   margin: 0;
   padding: 0;
@@ -18,7 +12,7 @@ html, body {
   height: 100vh;
   font-family: 'Almarai', sans-serif;
   overflow: hidden;
-  background: #132540;
+  background: linear-gradient(135deg, #1a2e3b, #0d4d31);
 }
 
 /* Animated QR Background */
@@ -31,7 +25,7 @@ html, body {
   z-index: 0;
   pointer-events: none;
   opacity: 0.8;
-  background: radial-gradient(circle at center, #132540, #0a1420);
+  background: radial-gradient(circle at center, rgba(76, 175, 80, 0.1), rgba(13, 77, 49, 0.3));
   overflow: hidden;
 }
 
@@ -42,8 +36,8 @@ html, body {
   width: 100%;
   height: 100%;
   background-image: 
-    linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, .05) 25%, rgba(255, 255, 255, .05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, .05) 75%, rgba(255, 255, 255, .05) 76%, transparent 77%, transparent),
-    linear-gradient(90deg, transparent 24%, rgba(255, 255, 255, .05) 25%, rgba(255, 255, 255, .05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, .05) 75%, rgba(255, 255, 255, .05) 76%, transparent 77%, transparent);
+    linear-gradient(0deg, transparent 24%, rgba(144, 238, 144, .05) 25%, rgba(144, 238, 144, .05) 26%, transparent 27%, transparent 74%, rgba(144, 238, 144, .05) 75%, rgba(144, 238, 144, .05) 76%, transparent 77%, transparent),
+    linear-gradient(90deg, transparent 24%, rgba(144, 238, 144, .05) 25%, rgba(144, 238, 144, .05) 26%, transparent 27%, transparent 74%, rgba(144, 238, 144, .05) 75%, rgba(144, 238, 144, .05) 76%, transparent 77%, transparent);
   background-size: 50px 50px;
   animation: qrFloat 3s linear infinite;
 }
@@ -81,8 +75,8 @@ html, body {
   height: 100vh;
   background: radial-gradient(
     circle at center,
-    transparent 15%,
-    rgba(0, 0, 0, 0.75) 100%
+    rgba(144, 238, 144, 0.1) 15%,
+    rgba(0, 0, 0, 0.6) 100%
   );
   z-index: 0.5;
   pointer-events: none;
@@ -94,24 +88,24 @@ html, body {
     opacity: 0.8;
     background: radial-gradient(
       circle at center,
-      transparent 15%,
-      rgba(0, 0, 0, 0.75) 100%
+      rgba(144, 238, 144, 0.1) 15%,
+      rgba(0, 0, 0, 0.6) 100%
     );
   }
   50% {
     opacity: 0.85;
     background: radial-gradient(
       circle at center,
-      transparent 20%,
-      rgba(0, 0, 0, 0.8) 100%
+      rgba(144, 238, 144, 0.15) 20%,
+      rgba(0, 0, 0, 0.65) 100%
     );
   }
   100% {
     opacity: 0.8;
     background: radial-gradient(
       circle at center,
-      transparent 15%,
-      rgba(0, 0, 0, 0.75) 100%
+      rgba(144, 238, 144, 0.1) 15%,
+      rgba(0, 0, 0, 0.6) 100%
     );
   }
 }
