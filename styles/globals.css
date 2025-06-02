@@ -82,92 +82,67 @@ html, body {
 }
 
 /* Glass Ticket Styles */
-.glass-ticket-container {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 25px 15px;
-  margin-top: 20px;
-}
-
-.glass-ticket-content {
+.glass-ticket {
   width: 100%;
   max-width: 460px;
+  margin: 20px auto;
+  padding: 25px;
   background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 20px;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  text-align: center;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    inset 0 0 32px rgba(255, 255, 255, 0.05);
   color: white;
+  transition: all 0.3s ease;
 }
 
-.glass-ticket-title {
-  font-size: 14px;
-  font-weight: normal;
-  margin-bottom: 15px;
-  color: white;
-  text-align: center;
-  width: 100%;
-  display: block;
+.glass-ticket:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.25),
+    inset 0 0 32px rgba(255, 255, 255, 0.08);
 }
 
 .recordings-list {
   list-style: none;
   padding: 0;
   margin: 15px 0;
-  text-align: center;
 }
 
 .recordings-list li {
-  margin: 10px 0;
-  padding: 10px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
+  margin: 12px 0;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.recordings-list li:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: scale(1.02);
 }
 
 .recordings-list audio {
   width: 100%;
-  margin: 5px 0;
+  margin: 8px 0;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .recordings-list .meta {
   font-size: 12px;
   color: rgba(255, 255, 255, 0.7);
-  margin-top: 5px;
-}
-
-@keyframes recordingPulse {
-  0% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.3;
-    transform: scale(0.95);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.recording-dot {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  background-color: red;
-  border-radius: 50%;
-  margin-right: 8px;
-  animation: recordingPulse 1s ease-in-out infinite;
+  margin-top: 8px;
+  text-align: right;
 }
 
 /* Voice Button Styles */
 .voice-btn {
   width: 100%;
-  max-width: 460px;
   height: 56px;
   padding: 0 24px;
   border: none;
@@ -192,7 +167,6 @@ html, body {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin: 8px auto;
 }
 
 .voice-btn:hover {
@@ -219,4 +193,29 @@ html, body {
   cursor: not-allowed;
   transform: none;
   background: rgba(255, 255, 255, 0.1);
+}
+
+@keyframes recordingPulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.recording-dot {
+  width: 12px;
+  height: 12px;
+  background: #ff4444;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
+  animation: recordingPulse 1s infinite ease-in-out;
 }

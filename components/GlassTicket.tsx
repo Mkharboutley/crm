@@ -15,8 +15,6 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string, role
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    console.log(`Initializing GlassTicket for ticket ${ticketId} with role ${role}`);
-    
     localStorage.setItem('currentTicketId', ticketId);
     localStorage.setItem(role === 'client' ? 'clientRequest' : 'dashboardReply', 'true');
 
@@ -25,7 +23,6 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string, role
     script.defer = true;
     
     script.onload = () => {
-      console.log('Voice handler script loaded');
       loadMessages();
     };
 
@@ -101,44 +98,42 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string, role
   };
 
   return (
-    <div className="glass-ticket-container">
-      <div className="glass-ticket-content">
-        <h2 className="glass-ticket-title">
-          🎙️ يمكنكم إرسال رسالة صوتية إلى المسؤول في حالة الطوارئ
-        </h2>
-        {role === 'client' && (
-          <>
-            <button
-              id={isRecording ? 'stop' : 'record'}
-              className="voice-btn"
-              onClick={handleRecordingClick}
-            >
-              {isRecording ? (
-                <>
-                  <span className="recording-dot"></span>
-                  Stop Recording ({formatTime(recordingTime)})
-                </>
-              ) : (
-                'Start Recording'
-              )}
-            </button>
-            <ul id="recordingsList" className="recordings-list"></ul>
-          </>
-        )}
-        {role === 'admin' && (
-          <div>
-            <h4>👂 Voice Messages History</h4>
-            <ul id="recordingsList" className="recordings-list">
-              {messages.map((msg, index) => (
-                <li key={index}>
-                  <audio src={msg.audioData} controls />
-                  <div className="meta">{new Date(msg.timestamp).toLocaleString()}</div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
+    <div className="glass-ticket">
+      <h2 style={{ fontSize: '14px', fontWeight: 'normal', marginBottom: '15px', textAlign: 'center' }}>
+        🎙️ يمكنكم إرسال رسالة صوتية إلى المسؤول في حالة الطوارئ
+      </h2>
+      {role === 'client' && (
+        <>
+          <button
+            id={isRecording ? 'stop' : 'record'}
+            className="voice-btn"
+            onClick={handleRecordingClick}
+          >
+            {isRecording ? (
+              <>
+                <span className="recording-dot"></span>
+                Stop Recording ({formatTime(recordingTime)})
+              </>
+            ) : (
+              'Start Recording'
+            )}
+          </button>
+          <ul id="recordingsList" className="recordings-list"></ul>
+        </>
+      )}
+      {role === 'admin' && (
+        <div>
+          <h4 style={{ marginBottom: '15px', textAlign: 'center' }}>👂 Voice Messages History</h4>
+          <ul id="recordingsList" className="recordings-list">
+            {messages.map((msg, index) => (
+              <li key={index}>
+                <audio src={msg.audioData} controls />
+                <div className="meta">{new Date(msg.timestamp).toLocaleString()}</div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
