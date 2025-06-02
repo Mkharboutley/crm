@@ -139,12 +139,12 @@
 .glassCard {
   background: linear-gradient(
     135deg,
-    rgba(19, 37, 64, 0.8) 0%,
-    rgba(98, 120, 153, 0.3) 100%
+    rgba(19, 37, 64, 0.4) 0%,
+    rgba(98, 120, 153, 0.15) 100%
   );
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-radius: 28px;
   padding: 2rem 1.6rem;
   color: white;
@@ -152,8 +152,8 @@
   width: 85%;
   max-width: 400px;
   box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.2),
-    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    0 8px 32px rgba(0, 0, 0, 0.15),
+    inset 0 1px 1px rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -164,8 +164,8 @@
 .glassCard:hover {
   transform: translateY(-2px);
   box-shadow: 
-    0 12px 40px rgba(0, 0, 0, 0.25),
-    inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    0 12px 40px rgba(0, 0, 0, 0.2),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1);
 }
 
 .ticketLine {
