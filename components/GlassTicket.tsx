@@ -14,10 +14,11 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
   const [isRecording, setIsRecording] = useState(false);
   const [messages, setMessages] = useState<VoiceMessage[]>([]);
   const [recordingTime, setRecordingTime] = useState(0);
-  const [recordRTCModule, setRecordRTCModule] = useState<any>(null);
   const [currentAudio, setCurrentAudio] = useState<string | null>(null);
-  const [WaveSurferLib, setWaveSurferLib] = useState<any>(null);
+  const [areLibsLoaded, setAreLibsLoaded] = useState(false);
   
+  const recordRTCRef = useRef<any>(null);
+  const waveSurferLibRef = useRef<any>(null);
   const recorderRef = useRef<any>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const timerRef = useRef<number | null>(null);
@@ -26,12 +27,17 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
   useEffect(() => {
     // Only run on client side
     if (typeof window !== 'undefined') {
-      import('recordrtc').then(module => {
-        setRecordRTCModule(module.default);
+      Promise.all([
+        import('recordrtc').then(module => {
+          recordRTCRef.current = module.default;
+        }),
+        import('wavesurfer.js').then(module => {
+          waveSurferLibRef.current = module.default;
+        })
+      ]).then(() => {
+        setAreLibsLoaded(true);
       });
-      import('wavesurfer.js').then(module => {
-        setWaveSurferLib(module.default);
-      });
+
       loadMessages();
       const interval = window.setInterval(loadMessages, 2000);
       return () => {
@@ -73,7 +79,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
   };
 
   const startRecording = async () => {
-    if (!recordRTCModule) {
+    if (!recordRTCRef.current) {
       toast.error('Recording functionality not ready');
       return;
     }
@@ -88,10 +94,10 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
       });
       
       streamRef.current = stream;
-      recorderRef.current = new recordRTCModule(stream, {
+      recorderRef.current = new recordRTCRef.current(stream, {
         type: 'audio',
         mimeType: 'audio/webm',
-        recorderType: recordRTCModule.StereoAudioRecorder,
+        recorderType: recordRTCRef.current.StereoAudioRecorder,
         numberOfAudioChannels: 1,
         timeSlice: 1000,
         desiredSampRate: 16000,
@@ -196,7 +202,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
   };
 
   const togglePlayback = async (messageId: string, audioData: string) => {
-    if (typeof window === 'undefined' || !WaveSurferLib) return;
+    if (typeof window === 'undefined' || !waveSurferLibRef.current) return;
 
     if (currentAudio === messageId) {
       wavesurferRefs.current[messageId]?.stop();
@@ -210,7 +216,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
         const container = document.getElementById(`waveform-${messageId}`);
         if (!container) return;
 
-        const wavesurfer = WaveSurferLib.create({
+        const wavesurfer = waveSurferLibRef.current.create({
           container,
           waveColor: '#4a9eff',
           progressColor: '#2c5282',
@@ -232,6 +238,10 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
       setCurrentAudio(messageId);
     }
   };
+
+  if (!areLibsLoaded) {
+    return <div>Loading audio components...</div>;
+  }
 
   return (
     <div className="glass-ticket">

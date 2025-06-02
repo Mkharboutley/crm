@@ -12,9 +12,10 @@ export default function VoiceMessage({ ticketId, role }: VoiceMessageProps) {
   const [recordingTime, setRecordingTime] = useState(0);
   const [messages, setMessages] = useState<any[]>([]);
   const [currentAudio, setCurrentAudio] = useState<string | null>(null);
-  const [RecordRTC, setRecordRTC] = useState<any>(null);
-  const [WaveSurferLib, setWaveSurferLib] = useState<any>(null);
+  const [areLibsLoaded, setAreLibsLoaded] = useState(false);
 
+  const recordRTCRef = useRef<any>(null);
+  const waveSurferLibRef = useRef<any>(null);
   const recorderRef = useRef<any>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const timerRef = useRef<number | null>(null);
@@ -23,11 +24,15 @@ export default function VoiceMessage({ ticketId, role }: VoiceMessageProps) {
   useEffect(() => {
     // Dynamically import RecordRTC and WaveSurfer only on the client side
     if (typeof window !== 'undefined') {
-      import('recordrtc').then(module => {
-        setRecordRTC(module.default);
-      });
-      import('wavesurfer.js').then(module => {
-        setWaveSurferLib(module.default);
+      Promise.all([
+        import('recordrtc').then(module => {
+          recordRTCRef.current = module.default;
+        }),
+        import('wavesurfer.js').then(module => {
+          waveSurferLibRef.current = module.default;
+        })
+      ]).then(() => {
+        setAreLibsLoaded(true);
       });
     }
 
@@ -64,7 +69,7 @@ export default function VoiceMessage({ ticketId, role }: VoiceMessageProps) {
   };
 
   const startRecording = async () => {
-    if (!RecordRTC) {
+    if (!recordRTCRef.current) {
       toast.error('Recording functionality not ready');
       return;
     }
@@ -79,10 +84,10 @@ export default function VoiceMessage({ ticketId, role }: VoiceMessageProps) {
       });
 
       streamRef.current = stream;
-      recorderRef.current = new RecordRTC(stream, {
+      recorderRef.current = new recordRTCRef.current(stream, {
         type: 'audio',
         mimeType: 'audio/webm',
-        recorderType: RecordRTC.StereoAudioRecorder,
+        recorderType: recordRTCRef.current.StereoAudioRecorder,
         numberOfAudioChannels: 1,
         timeSlice: 1000,
         desiredSampRate: 16000,
@@ -186,7 +191,7 @@ export default function VoiceMessage({ ticketId, role }: VoiceMessageProps) {
   };
 
   const togglePlayback = async (messageId: string, audioData: string) => {
-    if (typeof window === 'undefined' || !WaveSurferLib) return;
+    if (typeof window === 'undefined' || !waveSurferLibRef.current) return;
 
     if (currentAudio === messageId) {
       wavesurferRefs.current[messageId]?.stop();
@@ -200,7 +205,7 @@ export default function VoiceMessage({ ticketId, role }: VoiceMessageProps) {
         const container = document.getElementById(`waveform-${messageId}`);
         if (!container) return;
 
-        const wavesurfer = WaveSurferLib.create({
+        const wavesurfer = waveSurferLibRef.current.create({
           container,
           waveColor: '#4a9eff',
           progressColor: '#2c5282',
@@ -222,6 +227,10 @@ export default function VoiceMessage({ ticketId, role }: VoiceMessageProps) {
       setCurrentAudio(messageId);
     }
   };
+
+  if (!areLibsLoaded) {
+    return <div>Loading audio components...</div>;
+  }
 
   return (
     <div className="voice-message-container">
