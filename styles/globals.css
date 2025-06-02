@@ -36,7 +36,7 @@ html, body {
     radial-gradient(circle at 85% 44%, rgba(128, 0, 255, 0.4) 2px, transparent 2.5px),
     radial-gradient(circle at 46% 52%, rgba(255, 0, 255, 0.4) 2px, transparent 2.5px);
   background-size: 180px 180px;
-  animation: particlesDrift 8s linear infinite;
+  animation: particlesDrift 4s linear infinite;
   filter: blur(0.5px);
 }
 
@@ -47,10 +47,12 @@ html, body {
   }
   50% {
     opacity: 0.6;
+    transform: scale(1.05);
   }
   100% { 
     background-position: 180px 180px;
     opacity: 0.8;
+    transform: scale(1);
   }
 }
 
