@@ -1,10 +1,6 @@
-import dynamic from 'next/dynamic';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { v4 as uuidv4 } from 'uuid';
-
-// Dynamically import WaveSurfer with no SSR
-const WaveSurfer = dynamic(() => import('wavesurfer.js'), { ssr: false });
 
 interface VoiceMessageProps {
   ticketId: string;
@@ -17,6 +13,7 @@ export default function VoiceMessage({ ticketId, role }: VoiceMessageProps) {
   const [messages, setMessages] = useState<any[]>([]);
   const [currentAudio, setCurrentAudio] = useState<string | null>(null);
   const [RecordRTC, setRecordRTC] = useState<any>(null);
+  const [WaveSurferLib, setWaveSurferLib] = useState<any>(null);
 
   const recorderRef = useRef<any>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -24,10 +21,13 @@ export default function VoiceMessage({ ticketId, role }: VoiceMessageProps) {
   const wavesurferRefs = useRef<{ [key: string]: any }>({});
 
   useEffect(() => {
-    // Dynamically import RecordRTC only on the client side
+    // Dynamically import RecordRTC and WaveSurfer only on the client side
     if (typeof window !== 'undefined') {
       import('recordrtc').then(module => {
         setRecordRTC(module.default);
+      });
+      import('wavesurfer.js').then(module => {
+        setWaveSurferLib(module.default);
       });
     }
 
@@ -186,7 +186,7 @@ export default function VoiceMessage({ ticketId, role }: VoiceMessageProps) {
   };
 
   const togglePlayback = async (messageId: string, audioData: string) => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || !WaveSurferLib) return;
 
     if (currentAudio === messageId) {
       wavesurferRefs.current[messageId]?.stop();
@@ -200,7 +200,7 @@ export default function VoiceMessage({ ticketId, role }: VoiceMessageProps) {
         const container = document.getElementById(`waveform-${messageId}`);
         if (!container) return;
 
-        const wavesurfer = WaveSurfer.create({
+        const wavesurfer = WaveSurferLib.create({
           container,
           waveColor: '#4a9eff',
           progressColor: '#2c5282',

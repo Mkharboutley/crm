@@ -1,10 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { toast } from 'react-toastify';
 import { v4 as uuidv4 } from 'uuid';
-import dynamic from 'next/dynamic';
-
-// Dynamically import WaveSurfer with no SSR
-const WaveSurfer = dynamic(() => import('wavesurfer.js'), { ssr: false });
 
 interface VoiceMessage {
   id: string;
@@ -20,6 +16,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
   const [recordingTime, setRecordingTime] = useState(0);
   const [RecordRTC, setRecordRTC] = useState<any>(null);
   const [currentAudio, setCurrentAudio] = useState<string | null>(null);
+  const [WaveSurferLib, setWaveSurferLib] = useState<any>(null);
   
   const recorderRef = useRef<any>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -31,6 +28,9 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
     if (typeof window !== 'undefined') {
       import('recordrtc').then(module => {
         setRecordRTC(module.default);
+      });
+      import('wavesurfer.js').then(module => {
+        setWaveSurferLib(module.default);
       });
       loadMessages();
       const interval = window.setInterval(loadMessages, 2000);
@@ -196,7 +196,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
   };
 
   const togglePlayback = async (messageId: string, audioData: string) => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || !WaveSurferLib) return;
 
     if (currentAudio === messageId) {
       wavesurferRefs.current[messageId]?.stop();
@@ -210,7 +210,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
         const container = document.getElementById(`waveform-${messageId}`);
         if (!container) return;
 
-        const wavesurfer = WaveSurfer.create({
+        const wavesurfer = WaveSurferLib.create({
           container,
           waveColor: '#4a9eff',
           progressColor: '#2c5282',
