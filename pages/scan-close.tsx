@@ -13,8 +13,11 @@ import { firebaseApp } from '@/utils/firebase';
 import dynamic from 'next/dynamic';
 import styles from '@/styles/ScanClose.module.css';
 
-// Dynamically import QrScanner with no SSR, explicitly accessing default export
-const QrScanner = dynamic(() => import('qr-scanner').then(mod => mod.default), { ssr: false });
+// Import QrScanner only on client side
+const QrScanner = dynamic(
+  () => import('qr-scanner').then(mod => mod.default),
+  { ssr: false }
+);
 
 export default function ScanClosePage() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -33,9 +36,13 @@ export default function ScanClosePage() {
     let mounted = true;
 
     const initializeScanner = async () => {
-      if (!videoRef.current || !mounted) return;
+      if (!videoRef.current || !mounted || typeof window === 'undefined') return;
 
       try {
+        if (scannerRef.current) {
+          scannerRef.current.destroy();
+        }
+
         const scanner = new QrScanner(
           videoRef.current,
           async (result) => {
@@ -84,9 +91,7 @@ export default function ScanClosePage() {
       }
     };
 
-    if (typeof window !== 'undefined') {
-      initializeScanner();
-    }
+    initializeScanner();
 
     return () => {
       mounted = false;
