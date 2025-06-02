@@ -117,48 +117,59 @@
   background: 
     linear-gradient(
       217deg,
-      #132540 0%,
-      #627899 50%,
-      #132540 100%
+      rgba(2, 4, 8, 0.9) 0%,
+      rgba(19, 37, 64, 0.8) 50%,
+      rgba(2, 4, 8, 0.9) 100%
     ),
     linear-gradient(
       127deg,
-      rgba(0, 178, 169, 0.3) 0%,
-      rgba(98, 120, 153, 0.5) 50%,
-      rgba(19, 37, 64, 0.8) 100%
+      rgba(0, 178, 169, 0.1) 0%,
+      rgba(19, 37, 64, 0.2) 50%,
+      rgba(2, 4, 8, 0.3) 100%
     ),
     linear-gradient(
       336deg,
-      rgba(19, 37, 64, 0.9) 0%,
-      rgba(0, 178, 169, 0.2) 50%,
-      rgba(19, 37, 64, 0.9) 100%
+      rgba(2, 4, 8, 0.8) 0%,
+      rgba(0, 178, 169, 0.1) 50%,
+      rgba(2, 4, 8, 0.8) 100%
     );
-  background-size: 200% 200%, 200% 200%, 200% 200%;
-  animation: waveEffect 15s ease-in-out infinite;
+  background-size: 400% 400%;
+  animation: waveBackground 15s ease infinite;
+  position: relative;
 }
 
-@keyframes waveEffect {
+@keyframes waveBackground {
   0% {
-    background-position: 0% 50%, 0% 50%, 0% 50%;
+    background-position: 0% 50%;
   }
   50% {
-    background-position: 100% 50%, 50% 100%, 100% 0%;
+    background-position: 100% 50%;
   }
   100% {
-    background-position: 0% 50%, 0% 50%, 0% 50%;
+    background-position: 0% 50%;
   }
 }
 
-.logo {
-  width: 250px;
-  margin: 1rem auto 2rem;
+.ticketContainer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle at center,
+    transparent 0%,
+    rgba(2, 4, 8, 0.4) 100%
+  );
+  pointer-events: none;
 }
 
 .glassCard {
   background: linear-gradient(
     135deg,
     rgba(19, 37, 64, 0.4) 0%,
-    rgba(98, 120, 153, 0.15) 100%
+    rgba(2, 4, 8, 0.6) 100%
   );
   border: 1px solid rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(8px);
@@ -170,7 +181,7 @@
   width: 95%;
   max-width: 600px;
   box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.15),
+    0 8px 32px rgba(0, 0, 0, 0.3),
     inset 0 1px 1px rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
@@ -179,12 +190,13 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   position: relative;
   margin: 0 auto;
+  z-index: 1;
 }
 
 .glassCard:hover {
   transform: translateY(-2px);
   box-shadow: 
-    0 12px 40px rgba(0, 0, 0, 0.2),
+    0 12px 40px rgba(0, 0, 0, 0.4),
     inset 0 1px 1px rgba(255, 255, 255, 0.1);
 }
 
