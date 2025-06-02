@@ -29,7 +29,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string, role
   return (
     <div className="glass-ticket" style={{ paddingTop: '25px' }}>
       <h2 style={{ fontSize: '14px', fontWeight: 'normal', marginBottom: '15px' }}>
-        🎙️ Voice Messages for Ticket #{ticketId}
+        🎙️ يمكنكم إرسال رسالة صوتية إلى المسؤول في حالة الطوارئ
       </h2>
       {role === 'client' && (
         <>
@@ -41,10 +41,10 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string, role
             {isRecording ? (
               <>
                 <span style={{ color: 'red', marginRight: '8px' }}>●</span>
-                Stop Recording
+                إيقاف التسجيل
               </>
             ) : (
-              'Start Recording'
+              'بدء التسجيل'
             )}
           </button>
           <ul id="recordingsList" className="recordings-list"></ul>
@@ -52,7 +52,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string, role
       )}
       {role === 'admin' && (
         <div>
-          <h4>👂 Voice Messages History</h4>
+          <h4>👂 سجل الرسائل الصوتية</h4>
           <ul id="recordingsList" className="recordings-list"></ul>
         </div>
       )}
