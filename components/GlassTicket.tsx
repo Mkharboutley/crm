@@ -201,7 +201,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
       {role === 'client' && (
         <button
           onClick={isRecording ? stopRecording : startRecording}
-          className={`voice-btn w-full mb-4 ${isRecording ? 'recording' : ''}`}
+          className="voice-btn w-full mb-4"
         >
           {isRecording ? (
             <>
