@@ -41,7 +41,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
     }
     Object.values(audioRefs.current).forEach(audio => {
       audio?.pause();
-      audio?.currentTime && (audio.currentTime = 0);
+      audio.currentTime = 0;
     });
   };
 
@@ -63,6 +63,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
         }
       }, 2000);
     } else {
+      // For clients, periodically check for new messages
       syncIntervalRef.current = setInterval(loadMessages, 2000);
     }
   };
@@ -149,11 +150,6 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
     const blob = new Blob(chunksRef.current, { 
       type: MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/ogg'
     });
-
-    if (blob.size === 0) {
-      toast.error('Recording is empty');
-      return;
-    }
 
     const reader = new FileReader();
     reader.onloadend = () => {
