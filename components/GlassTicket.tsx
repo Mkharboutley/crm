@@ -21,6 +21,19 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string, role
     };
     document.body.appendChild(script);
 
+    // Load initial messages
+    const loadMessages = () => {
+      try {
+        const recordings = JSON.parse(localStorage.getItem('voiceRecordings') || '[]');
+        const ticketMessages = recordings.filter((r: any) => r.ticketId === ticketId);
+        setMessages(ticketMessages);
+      } catch (err) {
+        console.error('Error loading messages:', err);
+      }
+    };
+
+    loadMessages();
+
     // Check for new messages every second
     const interval = setInterval(() => {
       if (role === 'admin') {
@@ -29,9 +42,7 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string, role
           try {
             const { ticketId: syncedTicketId } = JSON.parse(sync);
             if (syncedTicketId === ticketId) {
-              const recordings = JSON.parse(localStorage.getItem('voiceRecordings') || '[]');
-              setMessages(recordings.filter((r: any) => r.ticketId === ticketId));
-              localStorage.removeItem('adminTicketSync');
+              loadMessages();
             }
           } catch (err) {
             console.error('Error parsing sync data:', err);
@@ -42,10 +53,12 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string, role
 
     return () => {
       clearInterval(interval);
-      const recordBtn = document.getElementById('record');
-      if (recordBtn) {
-        recordBtn.removeEventListener('click', () => setIsRecording(true));
+      if (role === 'client') {
+        localStorage.removeItem('clientRequest');
+      } else {
+        localStorage.removeItem('dashboardReply');
       }
+      localStorage.removeItem('currentTicketId');
     };
   }, [ticketId, role]);
 

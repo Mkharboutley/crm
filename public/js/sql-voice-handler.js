@@ -166,15 +166,25 @@ window.recordRTCScript.onload = () => {
           blob
         };
 
-        this.recordings.push(recording);
-        localStorage.setItem('voiceRecordings', JSON.stringify(
-          this.recordings.map(r => ({
-            ...r,
-            blob: null, // Don't store blobs in localStorage
-            audioUrl: null
-          }))
-        ));
+        // Load existing recordings first
+        let existingRecordings = [];
+        try {
+          existingRecordings = JSON.parse(localStorage.getItem('voiceRecordings') || '[]');
+        } catch (err) {
+          console.error('Error loading existing recordings:', err);
+        }
 
+        // Add new recording
+        existingRecordings.push({
+          ticketId,
+          timestamp,
+          // Don't store blob and audioUrl in localStorage
+        });
+
+        // Save updated recordings
+        localStorage.setItem('voiceRecordings', JSON.stringify(existingRecordings));
+
+        // Notify admin about new recording
         if (localStorage.getItem('clientRequest')) {
           localStorage.setItem('adminTicketSync', JSON.stringify({
             ticketId,
