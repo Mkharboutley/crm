@@ -16,10 +16,12 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
   const [recordingTime, setRecordingTime] = useState(0);
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+  const [selectedMessage, setSelectedMessage] = useState<string | null>(null);
   
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const syncIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const audioRefs = useRef<{ [key: string]: HTMLAudioElement | null }>({});
 
   useEffect(() => {
     loadMessages();
@@ -208,6 +210,29 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const handleMessageClick = (messageId: string) => {
+    setSelectedMessage(messageId === selectedMessage ? null : messageId);
+    const audio = audioRefs.current[messageId];
+    if (audio) {
+      if (messageId === selectedMessage) {
+        audio.pause();
+        audio.currentTime = 0;
+      } else {
+        // Stop all other playing audio
+        Object.values(audioRefs.current).forEach(a => {
+          if (a && a !== audio) {
+            a.pause();
+            a.currentTime = 0;
+          }
+        });
+        audio.play().catch(err => {
+          console.error('Error playing audio:', err);
+          toast.error('Failed to play audio message');
+        });
+      }
+    }
+  };
+
   return (
     <div className="glass-ticket">
       <button
@@ -226,7 +251,12 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
 
       <div className="messages-container">
         {messages.map((message) => (
-          <div key={message.id} className="message-item">
+          <div 
+            key={message.id} 
+            className={`message-item ${selectedMessage === message.id ? 'selected' : ''}`}
+            onClick={() => handleMessageClick(message.id)}
+            style={{ cursor: 'pointer' }}
+          >
             <div className="message-header">
               <span className="message-sender">
                 {message.sender === 'client' ? 'Client' : 'Admin'}
@@ -235,7 +265,14 @@ export default function GlassTicket({ ticketId, role }: { ticketId: string; role
                 {new Date(message.timestamp).toLocaleString()}
               </span>
             </div>
-            <audio src={message.audioData} controls className="w-full mt-2" />
+            <audio 
+              ref={el => audioRefs.current[message.id] = el}
+              src={message.audioData} 
+              className="hidden"
+            />
+            <div className="message-status">
+              {selectedMessage === message.id ? '⏸ Pause' : '▶ Play'}
+            </div>
           </div>
         ))}
       </div>
