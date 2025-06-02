@@ -203,7 +203,7 @@ export default function ClientTicketView() {
         <img src="/logo.png" alt="i-Valet" className={styles.logo} style={{ position: 'fixed', top: '20px', left: '50%', transform: 'translateX(-50%)', zIndex: 10, animation: 'logoBounce 2.5s infinite ease-in-out' }} />
 
         <div className={styles.glassCard}>
-          <h2 className={styles.title}>i-Valet Ticket info</h2>
+          <h2 className={styles.title}>معلومات البطاقة</h2>
           <p><strong>رقم البطاقة  : </strong> {ticket.ticket_number}</p>
           <p><strong>رقم اللوحة  : </strong> {ticket.plate_number}</p>
           <p><strong>موديل السيارة  : </strong> {ticket.car_model}</p>
